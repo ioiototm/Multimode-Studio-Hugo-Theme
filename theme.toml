@@ -1,0 +1,6 @@
+name = "multimode-studio"
+license = "CC0-1.0"
+licenselink = "https://creativecommons.org/publicdomain/zero/1.0/"
+description = "Multimode workspace theme inspired by text editors, game engines, DAWs and more."
+author = "ioioto"
+min_version = "0.120.0"

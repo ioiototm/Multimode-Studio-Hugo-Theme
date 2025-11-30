@@ -1,0 +1,9 @@
+{{ $labels := dict "demo" "Demo" "github" "GitHub" "pdf" "PDF" "doi" "DOI" "itch" "itch.io" "video" "Video" }}
+{{ with .Params.links }}
+<section class="links">
+  {{ range $k, $v := . }}
+    {{ $label := index $labels $k | default (strings.Title $k) }}
+    <a class="btn" href="{{ $v }}" target="_blank" rel="noopener">{{ $label }}</a>
+  {{ end }}
+</section>
+{{ end }}

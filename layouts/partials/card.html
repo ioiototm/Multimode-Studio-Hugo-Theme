@@ -1,0 +1,78 @@
+{{ $mode := .Section }}
+{{ $aliases := dict "publications" "research" "posts" "writing" "projects" "code" "streams" "game" }}
+{{ with index $aliases $mode }}{{ $mode = . }}{{ end }}
+{{ $iconMap := dict "code" "spark" "game" "controller" "art" "palette" "music" "note" "research" "flask" "writing" "pen" "projects" "spark" "streams" "wave" }}
+{{ $iconName := index $iconMap $mode }}
+{{ $palette := slice "code" "game" "art" "music" "research" "writing" }}
+{{ $toneVars := dict "code" "#2a9df4" "game" "#ff6fb7" "art" "#ffb347" "music" "#9c8cff" "research" "#ff9248" "writing" "#7dd87c" }}
+{{ $defaultMode := cond (in $palette $mode) $mode "code" }}
+{{ $cardModes := default (slice $defaultMode) .Params.modes }}
+{{ $cardModes = apply $cardModes "lower" "." }}
+{{ $filtered := slice }}
+{{ range $cardModes }}
+  {{ if in $palette . }}
+    {{ $filtered = $filtered | append . }}
+  {{ end }}
+{{ end }}
+{{ if eq (len $filtered) 0 }}
+  {{ $filtered = slice $defaultMode }}
+{{ end }}
+{{ $cardModes = $filtered }}
+{{ $startKey := "" }}
+{{ $endKey := "" }}
+{{ if gt (len $cardModes) 0 }}
+  {{ $startKey = index $cardModes 0 }}
+  {{ if gt (len $cardModes) 1 }}
+    {{ $endKey = index $cardModes 1 }}
+  {{ else }}
+    {{ $endKey = $startKey }}
+  {{ end }}
+{{ end }}
+{{ $startColor := default "var(--border)" (index $toneVars $startKey) }}
+{{ $endColor := default "var(--border)" (index $toneVars $endKey) }}
+<article class="card" data-mode="{{ $startKey }}" data-modes="{{ delimit $cardModes "," }}" style="--card-border-start: {{ $startColor }}; --card-border-end: {{ $endColor }};">
+  
+  {{/* MODULAR GADGETS LAYER */}}
+  <div class="card-gadgets" aria-hidden="true">
+    {{ if in $cardModes "code" }}<div class="gadget-code"></div>{{ end }}
+    {{ if in $cardModes "game" }}<div class="gadget-game"></div>{{ end }}
+    {{ if in $cardModes "music" }}<div class="gadget-music"></div>{{ end }}
+    {{ if in $cardModes "art" }}<div class="gadget-art"></div>{{ end }}
+    {{ if in $cardModes "research" }}<div class="gadget-research"></div>{{ end }}
+    {{ if in $cardModes "writing" }}<div class="gadget-writing"></div>{{ end }}
+  </div>
+
+  <a class="card-link" href="{{ .RelPermalink }}">
+    {{ $placeholder := "img/card-placeholder.svg" | relURL }}
+    {{ with .Params.image }}
+      <img class="card-cover" src="{{ . | relURL }}" alt="" loading="lazy" onerror="this.onerror=null;this.src='{{ $placeholder }}';this.classList.add('is-placeholder');">
+    {{ else }}
+      <img class="card-cover is-placeholder" src="{{ $placeholder }}" alt="" loading="lazy">
+    {{ end }}
+    <div class="card-body">
+      <div class="card-kicker">
+        {{ with $iconName }}
+          {{ partial "icon.html" (dict "name" . "size" 14) }}
+        {{ end }}
+        <span>{{ $mode | title }}</span>
+      </div>
+      <h3 class="card-title">{{ .Title }}</h3>
+      {{ with .Params.summary }}
+        <p class="summary">{{ . }}</p>
+      {{ else }}
+        <p class="summary">{{ .Summary | plainify | truncate 140 }}</p>
+      {{ end }}
+      {{ if gt (len $cardModes) 0 }}
+        <div class="card-tags">
+          {{ range $cardModes }}
+            <span class="chip" data-mode="{{ . }}">{{ . | title }}</span>
+          {{ end }}
+        </div>
+      {{ end }}
+      <div class="meta">
+        <time datetime="{{ .Date }}">{{ .Date.Format "2006-01-02" }}</time>
+        {{ with .Params.tags }} · <span class="tags">{{ delimit . ", " }}</span>{{ end }}
+      </div>
+    </div>
+  </a>
+</article>

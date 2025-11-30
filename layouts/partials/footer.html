@@ -1,0 +1,35 @@
+<div class="footer-container">
+  <footer class="terminal-footer" id="interactive-terminal">
+    <div class="terminal-header">
+      <div class="terminal-tab">
+        <span class="terminal-icon">_></span>
+        <span class="terminal-title">Administrator: ioioto-sh</span>
+      </div>
+      <div class="terminal-controls">
+        <span class="control minimize">_</span>
+        <span class="control maximize">□</span>
+        <span class="control close">×</span>
+      </div>
+    </div>
+    <div class="terminal-body">
+      <div class="terminal-line">
+        <span class="prompt">PS C:\Users\visitor></span> <span class="cmd">cat copyright.txt</span>
+      </div>
+      <div class="terminal-output">
+        © {{ now.Format "2006" }} {{ .Site.Params.author }} · CC0 1.0 Universal.
+      </div>
+      <div class="terminal-line">
+        <span class="prompt">PS C:\Users\visitor></span> <span class="cmd">ls ./socials</span>
+      </div>
+      <div class="terminal-output social-output">
+        {{ with .Site.Params.social }}
+          {{ range . }}<a href="{{ .url }}" target="_blank" rel="noopener" class="terminal-link">[{{ .name }}]</a> {{ end }}
+        {{ end }}
+      </div>
+      <div class="terminal-line">
+        <span class="prompt">PS C:\Users\visitor></span> <span class="cursor">_</span>
+      </div>
+    </div>
+  </footer>
+</div>
+<script src="{{ "js/terminal.js" | relURL }}"></script>

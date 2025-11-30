@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en">
+  {{ partial "head.html" . }}
+  <body>
+    <header class="site-header">{{ partial "nav.html" . }}</header>
+    <main class="wrap">{{ block "main" . }}{{ end }}</main>
+    <footer class="site-footer">{{ partial "footer.html" . }}</footer>
+    <script src="{{ "js/mode.js" | relURL }}" defer></script>
+  </body>
+</html>

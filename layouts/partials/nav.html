@@ -1,0 +1,26 @@
+<nav class="nav">
+  <div class="nav-brand">
+    <a class="logo" href="{{ "/" | relURL }}">{{ .Site.Title }}</a>
+    <span class="nav-tagline">code · games · art · music</span>
+  </div>
+  <div class="nav-right">
+    <ul class="menu tabs">
+      {{ $currentPage := . }}
+      <li><a href="{{ "/" | relURL }}" class="tab-item {{ if eq $currentPage.RelPermalink "/" }}active{{ end }}">{{ partial "icon.html" (dict "name" "spark" "size" 14) }} <span>Home.md</span> <span class="tab-close">×</span></a></li>
+      <li><a href="{{ "/me/" | relURL }}" class="tab-item {{ if hasPrefix $currentPage.RelPermalink "/me/" }}active{{ end }}">{{ partial "icon.html" (dict "name" "user" "size" 14) }} <span>Me.md</span> <span class="tab-close">×</span></a></li>
+      <li><a href="{{ "/projects/" | relURL }}" class="tab-item {{ if hasPrefix $currentPage.RelPermalink "/projects/" }}active{{ end }}">{{ partial "icon.html" (dict "name" "spark" "size" 14) }} <span>Projects.ts</span> <span class="tab-close">×</span></a></li>
+      <li><a href="{{ "/art/" | relURL }}" class="tab-item {{ if hasPrefix $currentPage.RelPermalink "/art/" }}active{{ end }}">{{ partial "icon.html" (dict "name" "palette" "size" 14) }} <span>Art.png</span> <span class="tab-close">×</span></a></li>
+      <li><a href="{{ "/music/" | relURL }}" class="tab-item {{ if hasPrefix $currentPage.RelPermalink "/music/" }}active{{ end }}">{{ partial "icon.html" (dict "name" "note" "size" 14) }} <span>Music.wav</span> <span class="tab-close">×</span></a></li>
+      <li><a href="{{ "/publications/" | relURL }}" class="tab-item {{ if hasPrefix $currentPage.RelPermalink "/publications/" }}active{{ end }}">{{ partial "icon.html" (dict "name" "flask" "size" 14) }} <span>Research.pdf</span> <span class="tab-close">×</span></a></li>
+      <li><a href="{{ "/posts/" | relURL }}" class="tab-item {{ if hasPrefix $currentPage.RelPermalink "/posts/" }}active{{ end }}">{{ partial "icon.html" (dict "name" "pen" "size" 14) }} <span>Blog.md</span> <span class="tab-close">×</span></a></li>
+      <li><a href="{{ "/now/" | relURL }}" class="tab-item {{ if hasPrefix $currentPage.RelPermalink "/now/" }}active{{ end }}">{{ partial "icon.html" (dict "name" "star" "size" 14) }} <span>Now.md</span> <span class="tab-close">×</span></a></li>
+    </ul>
+    <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle color theme">
+      <span class="theme-toggle-track">
+        {{ partial "icon.html" (dict "name" "sun" "size" 16) }}
+        {{ partial "icon.html" (dict "name" "moon" "size" 16) }}
+      </span>
+      <span class="theme-toggle-label">Day / Night</span>
+    </button>
+  </div>
+</nav>
