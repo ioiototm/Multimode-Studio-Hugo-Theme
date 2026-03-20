@@ -1,0 +1,7 @@
+{{ if or (in .Params.tags "cc0") (in .Params.tags "public-domain") }}
+<a href="{{ .Site.Params.cc0Path | default "/cc0/" }}" class="cc0-badge" title="This work is dedicated to the Public Domain (CC0)">
+  <i class="fab fa-creative-commons"></i>
+  <i class="fab fa-creative-commons-zero"></i>
+  <span>CC0 · Public Domain</span>
+</a>
+{{ end }}

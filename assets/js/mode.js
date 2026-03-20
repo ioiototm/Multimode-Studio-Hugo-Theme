@@ -7,14 +7,18 @@
     if(!attr) return [];
     return attr.split(",").map(m=>m.trim().toLowerCase()).filter(Boolean);
   };
+  const emptyState = document.getElementById("feed-empty");
   function apply(mode){
     const activeMode = normalize(mode);
     document.documentElement.setAttribute("data-mode", activeMode);
+    let visible = 0;
     cards.forEach(c=>{
       const cardModes = splitModes(c);
       const match = activeMode === "all" || cardModes.includes(activeMode);
       c.style.display = match ? "" : "none";
+      if(match) visible++;
     });
+    if(emptyState) emptyState.hidden = visible > 0;
     buttons.forEach(b=>{
       const btnMode = normalize(b.dataset.mode);
       const isActive = btnMode === activeMode;
@@ -50,7 +54,7 @@
   const toggle = document.querySelector(".theme-toggle");
   if(!toggle) return;
 
-  const KEY = "ioioto-theme";
+  const KEY = "multimode-theme";
   const media = window.matchMedia("(prefers-color-scheme: light)");
 
   const syncPrefAttr = ()=> root.setAttribute("data-prefers", media.matches ? "light" : "dark");

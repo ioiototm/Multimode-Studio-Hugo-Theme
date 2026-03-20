@@ -1,0 +1,55 @@
+{{ define "main" }}
+{{/* Mode Logic */}}
+{{ $mode := .Section }}
+{{ $aliases := dict "publications" "research" "posts" "writing" "projects" "code" "streams" "game" }}
+{{ with index $aliases $mode }}{{ $mode = . }}{{ end }}
+{{ $palette := slice "code" "game" "art" "music" "research" "writing" }}
+{{ $defaultMode := cond (in $palette $mode) $mode "code" }}
+{{ $pageModes := default (slice $defaultMode) .Params.modes }}
+{{ $pageModes = apply $pageModes "lower" "." }}
+
+<article class="single music-single" data-modes="{{ delimit $pageModes "," }}">
+  <header class="single-header music-header">
+    {{/* PAGE GADGETS LAYER */}}
+    <div class="page-gadgets" aria-hidden="true">
+      {{ if in $pageModes "code" }}<div class="gadget-code-page"></div>{{ end }}
+      {{ if in $pageModes "game" }}<div class="gadget-game-page"></div>{{ end }}
+      {{ if in $pageModes "music" }}<div class="gadget-music-page"></div>{{ end }}
+      {{ if in $pageModes "art" }}<div class="gadget-art-page"></div>{{ end }}
+      {{ if in $pageModes "research" }}<div class="gadget-research-page"></div>{{ end }}
+      {{ if in $pageModes "writing" }}<div class="gadget-writing-page"></div>{{ end }}
+    </div>
+
+    <h1 class="music-title">{{ .Title }}</h1>
+    
+    <div class="project-meta">
+      <time datetime="{{ .Date }}">{{ .Date.Format "January 2, 2006" }}</time>
+    </div>
+
+    {{ with .Params.tags }}
+    <div class="publication-tags-header" style="justify-content: center;">
+      {{ $palette := slice "code" "game" "art" "music" "research" "writing" }}
+      {{ range . }}
+        {{ $tagName := . | lower }}
+        {{ $pillClass := "tag-pill-music" }}
+        {{ if in $palette $tagName }}
+          {{ $pillClass = printf "tag-pill-%s" $tagName }}
+        {{ end }}
+        <a href="{{ "tags/" | relLangURL }}{{ . | urlize }}" class="{{ $pillClass }}">{{ . }}</a>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    <div style="text-align: center;">
+      {{ partial "cc0-badge.html" . }}
+    </div>
+  </header>
+
+  <div class="content music-content">
+    {{ .Content }}
+  </div>
+  
+  {{ partial "resources.html" . }}
+  {{ partial "links.html" . }}
+</article>
+{{ end }}

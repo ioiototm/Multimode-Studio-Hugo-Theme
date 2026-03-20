@@ -1,9 +1,10 @@
 <div class="footer-container">
+  {{ if .Site.Data.terminal }}
   <footer class="terminal-footer" id="interactive-terminal">
     <div class="terminal-header">
       <div class="terminal-tab">
         <span class="terminal-icon">_></span>
-        <span class="terminal-title">Administrator: ioioto-sh</span>
+        <span class="terminal-title">{{ .Site.Data.profile.terminalTitle | default "Administrator: multimode-sh" }}</span>
       </div>
       <div class="terminal-controls">
         <span class="control minimize">_</span>
@@ -16,14 +17,16 @@
         <span class="prompt">PS C:\Users\visitor></span> <span class="cmd">cat copyright.txt</span>
       </div>
       <div class="terminal-output">
-        © {{ now.Format "2006" }} {{ .Site.Params.author }} · CC0 1.0 Universal.
+        {{ with .Site.Data.profile.links.repo }}<a href="{{ . }}" target="_blank" rel="noopener" class="terminal-link" data-tone="code">{{ . | strings.TrimPrefix "https://" }}</a>{{ else }}{{ $.Site.Title }}{{ end }} · {{ $.Site.Params.copyright | default "CC0 1.0 Universal" }}.
       </div>
       <div class="terminal-line">
         <span class="prompt">PS C:\Users\visitor></span> <span class="cmd">ls ./socials</span>
       </div>
       <div class="terminal-output social-output">
-        {{ with .Site.Params.social }}
-          {{ range . }}<a href="{{ .url }}" target="_blank" rel="noopener" class="terminal-link">[{{ .name }}]</a> {{ end }}
+        {{ with .Site.Data.profile.social }}
+          {{ range . }}
+            <a href="{{ .url }}" target="_blank" rel="noopener" class="terminal-link" data-tone="{{ index .tones 0 }}"><i class="{{ .icon }}"></i> [{{ .name }}]</a> 
+          {{ end }}
         {{ end }}
       </div>
       <div class="terminal-line">
@@ -31,5 +34,46 @@
       </div>
     </div>
   </footer>
+  <script>
+    {{- $repoUrl := .Site.Data.profile.links.repo | default "" -}}
+    {{- $copyright := .Site.Params.copyright | default "CC0 1.0 Universal" -}}
+    {{- $copyrightContent := printf "%s · %s" ($repoUrl | strings.TrimPrefix "https://") $copyright -}}
+    {{- $files := merge .Site.Data.terminal.files (dict "copyright.txt" $copyrightContent) -}}
+    const terminalFiles = {{ $files | jsonify | safeJS }};
+    const socialData = [];
+    {{ range .Site.Data.profile.social }}
+      {{ $colors := slice }}
+      {{ range .tones }}
+        {{ $colors = $colors | append (printf "var(--tone-%s)" .) }}
+      {{ end }}
+      socialData.push({
+        id: "{{ .name | urlize }}.url",
+        name: "{{ .name }}",
+        url: "{{ .url }}",
+        icon: "{{ .icon }}",
+        color: "{{ index $colors 0 }}"
+      });
+    {{ end }}
+    
+    window.terminalData = {
+        files: terminalFiles,
+        socials: socialData,
+        commands: {{ with .Site.Data.terminal.commands }}{{ . | jsonify | safeJS }}{{ else }}{}{{ end }},
+        showCommandsInHelp: {{ .Site.Data.terminal.showInHelp | default false }}
+    };
+  </script>
+  {{- $termJs := resources.Get "js/terminal.js" | fingerprint -}}
+  <script src="{{ $termJs.RelPermalink }}"></script>
+  {{ else }}
+  <footer class="simple-footer">
+    <div class="container">
+      <p>© {{ now.Format "2006" }} {{ .Site.Data.profile.name }}. All rights reserved.</p>
+      <div class="social-links">
+        {{ with .Site.Data.profile.social }}
+          {{ range . }}<a href="{{ .url }}" target="_blank" rel="noopener"><i class="{{ .icon }}"></i> [{{ .name }}]</a> {{ end }}
+        {{ end }}
+      </div>
+    </div>
+  </footer>
+  {{ end }}
 </div>
-<script src="{{ "js/terminal.js" | relURL }}"></script>

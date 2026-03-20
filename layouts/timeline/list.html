@@ -1,0 +1,45 @@
+{{ define "main" }}
+<header class="page-header">
+  <h1>Timeline</h1>
+  <p class="lede">A chronological archive of everything I've made.</p>
+</header>
+
+<div class="timeline-container">
+  {{ $pages := where site.RegularPages "Section" "in" (slice "art" "posts" "projects" "music" "research" "writing") }}
+  
+  {{ range $pages.GroupByDate "2006" }}
+    <div class="timeline-year">
+      <h2 class="year-label">{{ .Key }}</h2>
+      <ul class="timeline-full-list">
+        {{ range .Pages }}
+          <li class="timeline-entry" data-type="{{ .Section }}">
+            <span class="timeline-date">{{ .Date.Format "Jan 02" }}</span>
+            {{/* Thumbnail Logic */}}
+            {{ $thumb := "" }}
+            {{ if .Params.image }}
+              {{ $thumb = .Params.image }}
+            {{ else if .Params.cover }}
+              {{ $thumb = .Params.cover.image }}
+            {{ end }}
+
+            <div class="timeline-card">
+                {{ if $thumb }}
+                <div class="timeline-thumb">
+                    <img src="{{ $thumb }}" alt="" loading="lazy">
+                </div>
+                {{ end }}
+                <div class="timeline-info">
+                    <div class="timeline-meta">
+                        <span class="timeline-type tag-{{ .Section }}">{{ .Section | title }}</span>
+                    </div>
+                    <a href="{{ .RelPermalink }}" class="timeline-title">{{ .Title }}</a>
+                    {{ with .Summary }}<p class="timeline-summary">{{ . | plainify | truncate 120 }}</p>{{ end }}
+                </div>
+            </div>
+          </li>
+        {{ end }}
+      </ul>
+    </div>
+  {{ end }}
+</div>
+{{ end }}

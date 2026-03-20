@@ -4,9 +4,9 @@
   {{ $tagIcons := dict "code" "spark" "game" "controller" "art" "palette" "music" "note" "research" "flask" "writing" "pen" }}
   {{ $filterIcons := merge (dict "all" "star") $tagIcons }}
   {{ $profile := site.Data.profile }}
-  {{ $nowPage := site.GetPage "/now" }}
+  {{ $nowPage := site.GetPage "/timeline" }}
   {{ if not $nowPage }}
-    {{ $nowPage = site.GetPage "section" "now" }}
+    {{ $nowPage = site.GetPage "section" "timeline" }}
   {{ end }}
 
   <section class="hero">
@@ -17,24 +17,73 @@
         </figure>
         <div class="hero-profile">
           <h2>{{ .name }}</h2>
-          <p>{{ .role }}</p>
+          <p>{{ .role | markdownify }}</p>
           {{ with (index .education 0) }}
-            <span class="hero-link">{{ .place }}</span>
+            <span class="hero-link">{{ .place | markdownify }}</span>
           {{ end }}
         </div>
-        <div class="hero-social">
-          {{ with .links.email }}<a href="{{ . }}" aria-label="Email">{{ partial "icon.html" (dict "name" "mail" "size" 20) }}</a>{{ end }}
-          {{ with .links.github }}<a href="{{ . }}" target="_blank" rel="noopener" aria-label="GitHub">{{ partial "icon.html" (dict "name" "github" "size" 20) }}</a>{{ end }}
-          {{ with .links.itch }}<a href="{{ . }}" target="_blank" rel="noopener" aria-label="itch.io">{{ partial "icon.html" (dict "name" "itch" "size" 20) }}</a>{{ end }}
-          {{ with .links.bluesky }}<a href="{{ . }}" target="_blank" rel="noopener" aria-label="Bluesky">{{ partial "icon.html" (dict "name" "bluesky" "size" 20) }}</a>{{ end }}
+        <div class="hero-social-group">
+          <div class="hero-social">
+            {{ range where .social "group" "creative" }}
+              {{ $n := len .tones }}
+              {{ $stops := slice }}
+              {{ if eq $n 1 }}
+                {{ $c := printf "var(--tone-%s)" (index .tones 0) }}
+                {{ $stops = slice $c $c }}
+              {{ else }}
+                {{ $step := div 100.0 $n }}
+                {{ $gap := 5.0 }}
+                {{ range $i, $tone := .tones }}
+                  {{ $c := printf "var(--tone-%s)" $tone }}
+                  {{ $start := mul $i $step }}
+                  {{ $end := mul (add $i 1) $step }}
+                  {{ $solidEnd := sub $end $gap }}
+                  {{ if eq (add $i 1) $n }} {{ $solidEnd = 100.0 }} {{ end }}
+                  {{ $stops = $stops | append (printf "%s %.1f%%" $c $start) }}
+                  {{ $stops = $stops | append (printf "%s %.1f%%" $c $solidEnd) }}
+                {{ end }}
+              {{ end }}
+              {{ $grad := delimit $stops ", " }}
+              <a href="{{ .url }}" target="_blank" rel="noopener" aria-label="{{ .name }}" class="multi-tone-btn" style="--btn-gradient: conic-gradient(from 180deg at 50% 50%, {{ $grad | safeCSS }}); --btn-color: var(--tone-{{ index .tones 0 }});">
+                <i class="{{ .icon }}"></i>
+              </a>
+            {{ end }}
+          </div>
+          <div class="hero-social-divider"></div>
+          <div class="hero-social">
+            {{ range where .social "group" "work" }}
+              {{ $n := len .tones }}
+              {{ $stops := slice }}
+              {{ if eq $n 1 }}
+                {{ $c := printf "var(--tone-%s)" (index .tones 0) }}
+                {{ $stops = slice $c $c }}
+              {{ else }}
+                {{ $step := div 100.0 $n }}
+                {{ $gap := 5.0 }}
+                {{ range $i, $tone := .tones }}
+                  {{ $c := printf "var(--tone-%s)" $tone }}
+                  {{ $start := mul $i $step }}
+                  {{ $end := mul (add $i 1) $step }}
+                  {{ $solidEnd := sub $end $gap }}
+                  {{ if eq (add $i 1) $n }} {{ $solidEnd = 100.0 }} {{ end }}
+                  {{ $stops = $stops | append (printf "%s %.1f%%" $c $start) }}
+                  {{ $stops = $stops | append (printf "%s %.1f%%" $c $solidEnd) }}
+                {{ end }}
+              {{ end }}
+              {{ $grad := delimit $stops ", " }}
+              <a href="{{ .url }}" target="_blank" rel="noopener" aria-label="{{ .name }}" class="multi-tone-btn" style="--btn-gradient: conic-gradient(from 180deg at 50% 50%, {{ $grad | safeCSS }}); --btn-color: var(--tone-{{ index .tones 0 }});">
+                <i class="{{ .icon }}"></i>
+              </a>
+            {{ end }}
+          </div>
         </div>
       </div>
     {{ end }}
         <div class="hero-right">
       <div class="hero-primary">
-        <p class="eyebrow">Multimode studio of one</p>
-        <h1>{{ .Site.Params.hero.title }}</h1>
-        <p class="lede">{{ .Site.Params.hero.subtitle }}</p>
+        <p class="eyebrow">{{ .Site.Data.profile.hero.tagline | default "Creative Research & Archives" }}</p>
+        <h1>{{ .Site.Data.profile.hero.title }}</h1>
+        <p class="lede">{{ .Site.Data.profile.hero.subtitle | markdownify }}</p>
         <div class="hero-cta">
           <a class="btn primary" href="{{ "/projects/" | relURL }}">Explore projects</a>
           <a class="btn ghost" href="{{ "/posts/" | relURL }}">Read the blog</a>
@@ -63,18 +112,18 @@
           <ul class="fold-highlights">
             <li>
               <span class="fact-label">Role</span>
-              <strong>{{ .role }}</strong>
+              <strong>{{ .role | markdownify }}</strong>
             </li>
             {{ range first 1 .education }}
               <li>
                 <span class="fact-label">Top education</span>
-                <strong>{{ .degree }} @ {{ .place }}</strong>
+                <strong>{{ .degree | markdownify }} @ {{ .place | markdownify }}</strong>
               </li>
             {{ end }}
             {{ range first 1 .workingOn }}
               <li>
                 <span class="fact-label">Current focus</span>
-                <strong>{{ .title }}</strong>
+                <strong>{{ .title | markdownify }}</strong>
               </li>
             {{ end }}
           </ul>
@@ -82,32 +131,25 @@
         {{ with .tagline }}<p class="fold-tagline">{{ . }}</p>{{ end }}
         <div class="about-actions">
           <a class="btn primary" href="{{ "/me/" | relURL }}">Full bio & timeline</a>
-          <a class="btn ghost" href="{{ "/now/" | relURL }}">See the now page</a>
+          <a class="btn ghost" href="{{ "/timeline/" | relURL }}">See the timeline</a>
         </div>
       </div>
     {{ end }}
 
     <div class="hero-panel">
-      {{ with $nowPage }}
-        {{ $nowText := .Plain }}
-        {{ if not $nowText }}
-          {{ $nowText = .Summary }}
-        {{ end }}
-        {{ if not $nowText }}
-          {{ $nowText = .Content }}
-        {{ end }}
-        <div class="now-card">
-          <p class="label">Now</p>
-          <p>{{ $nowText | plainify | truncate 160 }}</p>
-          <a class="text-link" href="{{ .RelPermalink }}">See the now page →</a>
+      <div class="signal-note" style="border-top: none; margin-top: 0; padding-top: 0; width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
+            <p class="label" style="margin: 0;">Recent Activity</p>
+            <a href="{{ "/timeline/" | relURL }}" class="text-link" style="font-size: 0.85rem;">View full timeline →</a>
         </div>
-      {{ end }}
-      <div class="signal-note">
-        <p class="label">Currently bouncing between</p>
-        <ul>
-          <li>VR + spatial computing research</li>
-          <li>Indie game prototypes & streaming</li>
-          <li>Open CC0 art + music drops</li>
+        <ul class="timeline-list">
+          {{ $timeline := where site.RegularPages "Section" "in" (slice "art" "posts" "projects" "music" "research" "writing") }}
+          {{ range first 5 $timeline.ByDate.Reverse }}
+            <li>
+              <span class="timeline-date">{{ .Date.Format "Jan 02" }}</span>
+              <a href="{{ .RelPermalink }}" class="timeline-link">{{ .Title }}</a>
+            </li>
+          {{ end }}
         </ul>
       </div>
     </div>
@@ -116,7 +158,7 @@
   {{ $signals := slice
     (dict "label" "Latest project" "section" "/projects" "cta" "/projects/" "tone" "code" "ctaLabel" "projects")
     (dict "label" "Fresh track" "section" "/music" "cta" "/music/" "tone" "music" "ctaLabel" "music")
-    (dict "label" "Recent research" "section" "/publications" "cta" "/publications/" "tone" "research" "ctaLabel" "papers")
+    (dict "label" "Recent research" "section" "/research" "cta" "/research/" "tone" "research" "ctaLabel" "papers")
   }}
   {{ $toneIcons := dict "code" "spark" "music" "note" "research" "flask" }}
 
@@ -177,6 +219,9 @@
       {{ range first 18 (.Site.RegularPages.ByDate.Reverse) }}
         {{ partial "card.html" . }}
       {{ end }}
+    </div>
+    <div class="feed-empty" id="feed-empty" hidden>
+      <p class="feed-empty-msg">Nothing here yet. Check back later — or don't, I'm not your boss.</p>
     </div>
   </section>
 {{ end }}

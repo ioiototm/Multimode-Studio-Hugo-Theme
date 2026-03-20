@@ -1,0 +1,170 @@
+{{ define "main" }}
+{{/* Mode Logic */}}
+{{ $mode := .Section }}
+{{ $aliases := dict "publications" "research" "posts" "writing" "projects" "code" "streams" "game" }}
+{{ with index $aliases $mode }}{{ $mode = . }}{{ end }}
+{{ $palette := slice "code" "game" "art" "music" "research" "writing" }}
+{{ $defaultMode := cond (in $palette $mode) $mode "code" }}
+{{ $pageModes := default (slice $defaultMode) .Params.modes }}
+{{ $pageModes = apply $pageModes "lower" "." }}
+
+<article class="publication-single" data-modes="{{ delimit $pageModes "," }}">
+  <header class="publication-header">
+    {{/* PAGE GADGETS LAYER */}}
+    <div class="page-gadgets" aria-hidden="true">
+      {{ if in $pageModes "code" }}<div class="gadget-code-page"></div>{{ end }}
+      {{ if in $pageModes "game" }}<div class="gadget-game-page"></div>{{ end }}
+      {{ if in $pageModes "music" }}<div class="gadget-music-page"></div>{{ end }}
+      {{ if in $pageModes "art" }}<div class="gadget-art-page"></div>{{ end }}
+      {{ if in $pageModes "research" }}<div class="gadget-research-page"></div>{{ end }}
+      {{ if in $pageModes "writing" }}<div class="gadget-writing-page"></div>{{ end }}
+    </div>
+    <div class="publication-meta-top">
+      <span class="pub-date">{{ .Date.Format "January 2006" }}</span>
+      {{ if .Params.publication_short }}
+        <span class="separator">·</span>
+        <span class="pub-venue">{{ .Params.publication_short | markdownify }}</span>
+      {{ else if .Params.publication }}
+        <span class="separator">·</span>
+        <span class="pub-venue">{{ .Params.publication | markdownify }}</span>
+      {{ end }}
+    </div>
+
+    <h1 class="publication-title">{{ .Title }}</h1>
+
+    {{ with .Params.tags }}
+    <div class="publication-tags-header">
+      {{ $palette := slice "code" "game" "art" "music" "research" "writing" }}
+      {{ range . }}
+        {{ $tagName := . | lower }}
+        {{ $pillClass := "tag-pill-research" }}
+        {{ if in $palette $tagName }}
+          {{ $pillClass = printf "tag-pill-%s" $tagName }}
+        {{ end }}
+        <a href="{{ "tags/" | relLangURL }}{{ . | urlize }}" class="{{ $pillClass }}">{{ . }}</a>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    <div style="text-align: center; margin-bottom: 24px;">
+      {{ partial "cc0-badge.html" . }}
+    </div>
+    
+    <div class="publication-authors">
+      {{ range $index, $author := .Params.authors }}
+        {{ if gt $index 0 }}<span class="author-sep">, </span>{{ end }}
+        {{ if or (eq $author "admin") (eq $author site.Data.profile.name) }}
+          <span class="author me">{{ site.Data.profile.name }}</span>
+        {{ else }}
+          <span class="author">{{ $author }}</span>
+        {{ end }}
+      {{ end }}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="publication-links">
+      {{ if .Params.url_pdf }}
+        <a href="{{ .Params.url_pdf }}" target="_blank" class="btn ghost small"><i class="fas fa-file-pdf"></i> PDF</a>
+      {{ end }}
+      {{ if .Params.doi }}
+        <a href="https://doi.org/{{ .Params.doi }}" target="_blank" class="btn ghost small"><i class="fas fa-external-link-alt"></i> DOI</a>
+      {{ end }}
+      {{ if .Params.url_code }}
+        <a href="{{ .Params.url_code }}" target="_blank" class="btn ghost small"><i class="fab fa-github"></i> Code</a>
+      {{ end }}
+      {{ if .Params.url_project }}
+        <a href="{{ .Params.url_project }}" target="_blank" class="btn ghost small"><i class="fas fa-project-diagram"></i> Project</a>
+      {{ end }}
+      {{ if .Params.url_video }}
+        <a href="{{ .Params.url_video }}" target="_blank" class="btn ghost small"><i class="fas fa-video"></i> Video</a>
+      {{ end }}
+      {{ if .Params.url_cite }}
+        <button onclick="openCiteModal('{{ .Params.url_cite }}')" class="btn ghost small"><i class="fas fa-quote-right"></i> Cite</button>
+      {{ end }}
+    </div>
+  </header>
+
+  {{ if .Params.abstract }}
+  <div class="publication-abstract">
+    <h3>Abstract</h3>
+    <p>{{ .Params.abstract }}</p>
+  </div>
+  {{ end }}
+
+  <div class="publication-content">
+    {{ .Content }}
+  </div>
+
+  {{ if .Params.projects }}
+  <div class="publication-footer">
+    <h3>Connected Projects</h3>
+    <div class="related-grid">
+      {{ range .Params.projects }}
+        {{ $projectPage := site.GetPage . }}
+        {{ if $projectPage }}
+          {{ partial "card.html" $projectPage }}
+        {{ end }}
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
+</article>
+
+<!-- BibTeX cite modal -->
+<div class="cite-modal-backdrop" id="cite-modal-backdrop" hidden onclick="closeCiteModal()"></div>
+<div class="cite-modal" id="cite-modal" hidden role="dialog" aria-modal="true" aria-label="Citation">
+  <div class="cite-modal-header">
+    <span class="cite-modal-title"><i class="fas fa-quote-right"></i> BibTeX</span>
+    <button class="cite-modal-close" onclick="closeCiteModal()" aria-label="Close">✕</button>
+  </div>
+  <pre class="cite-modal-content" id="cite-modal-content"></pre>
+  <div class="cite-modal-actions">
+    <button class="btn primary small" id="cite-copy-btn" onclick="copyCite()"><i class="fas fa-copy"></i> Copy</button>
+    <a class="btn ghost small" id="cite-download-btn" download><i class="fas fa-download"></i> Download .bib</a>
+  </div>
+</div>
+
+<script>
+function openCiteModal(url) {
+  fetch(url)
+    .then(r => r.text())
+    .then(text => {
+      document.getElementById('cite-modal-content').textContent = text;
+      document.getElementById('cite-download-btn').href = url;
+      document.getElementById('cite-modal').hidden = false;
+      document.getElementById('cite-modal-backdrop').hidden = false;
+      document.getElementById('cite-copy-btn').textContent = ' Copy';
+      document.getElementById('cite-copy-btn').innerHTML = '<i class="fas fa-copy"></i> Copy';
+    });
+}
+function closeCiteModal() {
+  document.getElementById('cite-modal').hidden = true;
+  document.getElementById('cite-modal-backdrop').hidden = true;
+}
+function copyCite() {
+  const text = document.getElementById('cite-modal-content').textContent;
+  const btn = document.getElementById('cite-copy-btn');
+  function onSuccess() {
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onSuccess).catch(() => fallbackCopy(text, onSuccess));
+  } else {
+    fallbackCopy(text, onSuccess);
+  }
+}
+function fallbackCopy(text, onSuccess) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { if (document.execCommand('copy')) onSuccess(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCiteModal(); });
+</script>
+{{ end }}

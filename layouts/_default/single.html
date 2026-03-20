@@ -25,13 +25,9 @@
       <time datetime="{{ .Date }}">{{ .Date.Format "2006-01-02" }}</time>
       {{ with .Params.tags }} · <span>{{ delimit . ", " }}</span>{{ end }}
     </div>
-    {{ with .Params.image }}
-      <div class="hero-wrapper">
-        <img class="hero" src="{{ . | relURL }}" alt="">
-      </div>
-    {{ end }}
   </header>
   <div class="content">{{ .Content }}</div>
+  {{ partial "resources.html" . }}
   {{ partial "links.html" . }}
 </article>
 {{ end }}

@@ -18,19 +18,23 @@
   {{ $filtered = slice $defaultMode }}
 {{ end }}
 {{ $cardModes = $filtered }}
-{{ $startKey := "" }}
-{{ $endKey := "" }}
-{{ if gt (len $cardModes) 0 }}
-  {{ $startKey = index $cardModes 0 }}
-  {{ if gt (len $cardModes) 1 }}
-    {{ $endKey = index $cardModes 1 }}
-  {{ else }}
-    {{ $endKey = $startKey }}
+{{ $gradientColors := slice }}
+{{ range $cardModes }}
+  {{ $c := index $toneVars . }}
+  {{ if $c }}
+    {{ $gradientColors = $gradientColors | append $c }}
   {{ end }}
 {{ end }}
-{{ $startColor := default "var(--border)" (index $toneVars $startKey) }}
-{{ $endColor := default "var(--border)" (index $toneVars $endKey) }}
-<article class="card" data-mode="{{ $startKey }}" data-modes="{{ delimit $cardModes "," }}" style="--card-border-start: {{ $startColor }}; --card-border-end: {{ $endColor }};">
+
+{{ if eq (len $gradientColors) 0 }}
+  {{ $gradientColors = slice "var(--border)" "var(--border)" }}
+{{ else if eq (len $gradientColors) 1 }}
+  {{ $gradientColors = $gradientColors | append (index $gradientColors 0) }}
+{{ end }}
+
+{{ $gradientString := delimit $gradientColors "," }}
+
+<article class="card" data-mode="{{ index $cardModes 0 }}" data-modes="{{ delimit $cardModes "," }}" style="background-image: linear-gradient(var(--card),var(--card)), linear-gradient(130deg, {{ $gradientString }});">
   
   {{/* MODULAR GADGETS LAYER */}}
   <div class="card-gadgets" aria-hidden="true">

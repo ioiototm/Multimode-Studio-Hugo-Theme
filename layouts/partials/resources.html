@@ -1,0 +1,112 @@
+{{ if .Params.resources }}
+<section class="resources-container">
+  <h3 class="resources-heading">
+    <span class="icon">↓</span> Project Files & Extras
+  </h3>
+  <div class="resource-grid">
+    {{ range .Params.resources }}
+      {{ $type := lower .type }}
+      
+      {{/* TYPE: ITCH.IO WIDGET */}}
+      {{ if eq $type "itch" }}
+      <div class="resource-card full-width-card video-card-wrapper">
+        {{ if or .title .description }}
+        <div class="video-header">
+            {{ if .title }}<h4 class="video-title">{{ .title }}</h4>{{ end }}
+            {{ if .description }}<p class="video-description">{{ .description }}</p>{{ end }}
+        </div>
+        {{ end }}
+        <!-- The iframe src needs the ID. We use your dark theme colors. -->
+        <iframe frameborder="0" src="https://itch.io/embed/{{ .id }}?bg_color=0d1117&amp;fg_color=eeeeee&amp;link_color=58a6ff&amp;border_color=30363d" width="552" height="167"></iframe>
+      </div>
+
+      {{/* TYPE: YOUTUBE VIDEO */}}
+      {{ else if eq $type "youtube" }}
+      <div class="resource-card full-width-card video-card-wrapper">
+        {{ if or .title .description }}
+        <div class="video-header">
+            {{ if .title }}<h4 class="video-title">{{ .title }}</h4>{{ end }}
+            {{ if .description }}<p class="video-description">{{ .description }}</p>{{ end }}
+        </div>
+        {{ end }}
+        <div class="video-container">
+            <iframe src="https://www.youtube-nocookie.com/embed/{{ .id }}" title="{{ .title }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      {{/* TYPE: STANDARD FILE */}}
+      {{ else }}
+      
+      {{ $tone := "var(--muted)" }}
+      {{ if in (slice "blender" "csp" "psd" "art" "image") $type }}{{ $tone = "var(--tone-art)" }}{{ end }}
+      {{ if in (slice "flp" "wav" "mp3" "music" "audio") $type }}{{ $tone = "var(--tone-music)" }}{{ end }}
+      {{ if in (slice "unity" "godot" "code" "zip" "exe") $type }}{{ $tone = "var(--tone-game)" }}{{ end }}
+      {{ if in (slice "video" "timelapse" "mp4") $type }}{{ $tone = "var(--tone-research)" }}{{ end }}
+      
+      {{/* Determine External Link */}}
+      {{ $isExternal := or (hasPrefix .url "http") (hasPrefix .url "//") }}
+      {{ $target := "" }}
+      {{ $rel := "" }}
+      {{ if $isExternal }}
+        {{ $target = "_blank" }}
+        {{ $rel = "noopener noreferrer" }}
+      {{ end }}
+
+      {{/* Determine CTA Text */}}
+      {{ $cta := "Download" }}
+      {{ if eq $type "video" }}{{ $cta = "Watch" }}{{ end }}
+      {{ if eq $type "code" }}{{ $cta = "View Code" }}{{ end }}
+      {{ if and $isExternal (ne $type "video") (ne $type "code") }}{{ $cta = "Open Link" }}{{ end }}
+
+      {{/* Auto-calculate size for local files if not provided */}}
+      {{ $size := .size }}
+      {{ if and (not $size) (not $isExternal) }}
+        {{ if hasPrefix .url "/" }}
+          {{ $filePath := path.Join "static" .url }}
+          {{ if fileExists $filePath }}
+            {{ $stats := os.Stat $filePath }}
+            {{ $bytes := $stats.Size }}
+            {{ if lt $bytes 1048576 }}
+              {{ $size = printf "%.0f KB" (div $bytes 1024.0) }}
+            {{ else if lt $bytes 1073741824 }}
+              {{ $size = printf "%.1f MB" (div $bytes 1048576.0) }}
+            {{ else }}
+              {{ $size = printf "%.2f GB" (div $bytes 1073741824.0) }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+
+      <a href="{{ .url }}" class="resource-card" target="{{ $target }}" rel="{{ $rel }}" style="--resource-tone: {{ $tone }}">
+        <div class="resource-icon-box">
+          {{ if eq $type "blender" }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          {{ else if in (slice "csp" "psd" "art") $type }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+          {{ else if in (slice "flp" "music" "audio") $type }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          {{ else if in (slice "video" "timelapse") $type }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          {{ else if in (slice "code" "zip" "unity" "godot") $type }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          {{ else }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+          {{ end }}
+        </div>
+        <div class="resource-details">
+          <span class="resource-title">{{ .title }}</span>
+          {{ if .description }}<span class="resource-desc">{{ .description }}</span>{{ end }}
+          <span class="resource-meta">
+            <span class="resource-tag">{{ .type }}</span>
+            {{ if $size }}<span class="resource-size">· {{ $size }}</span>{{ end }}
+          </span>
+        </div>
+        <div class="resource-cta">
+          {{ $cta }} <span class="arrow">&rarr;</span>
+        </div>
+      </a>
+      {{ end }}
+    {{ end }}
+  </div>
+</section>
+{{ end }}

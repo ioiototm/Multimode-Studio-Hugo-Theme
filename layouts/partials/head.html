@@ -3,6 +3,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}</title>
   <meta name="color-scheme" content="dark light">
-  <link rel="stylesheet" href="{{ "css/style.css" | relURL }}?v={{ now.Unix }}4">
+  {{ if .Site.Data.profile.favicon }}
+    <link rel="icon" href="{{ .Site.Data.profile.favicon | relURL }}">
+  {{ end }}
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Devicon -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+  
+  <script>
+    (function() {
+      const KEY = "multimode-theme";
+      const stored = localStorage.getItem(KEY);
+      const media = window.matchMedia("(prefers-color-scheme: light)");
+      
+      // 1. Set the user's explicit preference if it exists
+      if (stored) {
+        document.documentElement.setAttribute("data-theme", stored);
+      }
+      
+      // 2. Set the system preference (needed for CSS fallbacks)
+      document.documentElement.setAttribute("data-prefers", media.matches ? "light" : "dark");
+    })();
+  </script>
+
+  {{- $css := resources.Get "css/style.css" | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
   {{ hugo.Generator }}
 </head>

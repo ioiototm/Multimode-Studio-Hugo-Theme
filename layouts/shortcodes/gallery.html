@@ -1,0 +1,51 @@
+{{/* Gallery shortcode: each inner line is "filename | caption" */}}
+
+{{ $folder := .Get "folder" }}
+{{ $raw := .Inner }}
+{{ $lines := split $raw "\n" }}
+
+<div class="gallery-viewer">
+  <div class="gallery-main">
+    <button class="gallery-nav gallery-prev" aria-label="Previous image">&lsaquo;</button>
+    <div class="gallery-stage">
+      {{ $idx := 0 }}
+      {{ range $lines }}
+        {{ $trimmed := trim . " \t\r" }}
+        {{ if $trimmed }}
+          {{ $parts := split $trimmed "|" }}
+          {{ $file := trim (index $parts 0) " \t" }}
+          {{ $caption := "" }}
+          {{ if gt (len $parts) 1 }}
+            {{ $caption = trim (index $parts 1) " \t" }}
+          {{ end }}
+          <figure class="gallery-slide{{ if eq $idx 0 }} active{{ end }}" data-index="{{ $idx }}">
+            <img src="{{ $folder }}/{{ $file }}" alt="{{ $caption }}" loading="lazy">
+            {{ if $caption }}<figcaption>{{ $caption }}</figcaption>{{ end }}
+          </figure>
+          {{ $idx = add $idx 1 }}
+        {{ end }}
+      {{ end }}
+    </div>
+    <button class="gallery-nav gallery-next" aria-label="Next image">&rsaquo;</button>
+    <div class="gallery-counter"></div>
+  </div>
+
+  <div class="gallery-thumbs">
+    {{ $idx := 0 }}
+    {{ range $lines }}
+      {{ $trimmed := trim . " \t\r" }}
+      {{ if $trimmed }}
+        {{ $parts := split $trimmed "|" }}
+        {{ $file := trim (index $parts 0) " \t" }}
+        {{ $caption := "" }}
+        {{ if gt (len $parts) 1 }}
+          {{ $caption = trim (index $parts 1) " \t" }}
+        {{ end }}
+        <button class="gallery-thumb{{ if eq $idx 0 }} active{{ end }}" data-index="{{ $idx }}" aria-label="{{ $caption }}">
+          <img src="{{ $folder }}/{{ $file }}" alt="" loading="lazy">
+        </button>
+        {{ $idx = add $idx 1 }}
+      {{ end }}
+    {{ end }}
+  </div>
+</div>

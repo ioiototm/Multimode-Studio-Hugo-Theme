@@ -1,0 +1,51 @@
+{{ define "main" }}
+{{/* Mode Logic */}}
+{{ $mode := .Section }}
+{{ $aliases := dict "publications" "research" "posts" "writing" "projects" "code" "streams" "game" }}
+{{ with index $aliases $mode }}{{ $mode = . }}{{ end }}
+{{ $palette := slice "code" "game" "art" "music" "research" "writing" }}
+{{ $defaultMode := cond (in $palette $mode) $mode "code" }}
+{{ $pageModes := default (slice $defaultMode) .Params.modes }}
+{{ $pageModes = apply $pageModes "lower" "." }}
+
+<article class="single art-single" data-modes="{{ delimit $pageModes "," }}">
+  <header class="single-header art-header">
+    {{/* PAGE GADGETS LAYER */}}
+    <div class="page-gadgets" aria-hidden="true">
+      {{ if in $pageModes "code" }}<div class="gadget-code-page"></div>{{ end }}
+      {{ if in $pageModes "game" }}<div class="gadget-game-page"></div>{{ end }}
+      {{ if in $pageModes "music" }}<div class="gadget-music-page"></div>{{ end }}
+      {{ if in $pageModes "art" }}<div class="gadget-art-page"></div>{{ end }}
+      {{ if in $pageModes "research" }}<div class="gadget-research-page"></div>{{ end }}
+      {{ if in $pageModes "writing" }}<div class="gadget-writing-page"></div>{{ end }}
+    </div>
+
+    <h1 class="art-title">{{ .Title }}</h1>
+    
+    <div class="art-meta">
+      <div class="art-date">
+        <time datetime="{{ .Date }}">{{ .Date.Format "January 2, 2006" }}</time>
+      </div>
+      
+      {{ with .Params.tags }}
+      <div class="art-tags">
+        {{ range . }}
+          <a href="{{ "tags/" | relLangURL }}{{ . | urlize }}" class="tag-pill tag-pill-art">{{ . }}</a>
+        {{ end }}
+      </div>
+      {{ end }}
+
+      <div style="text-align: center;">
+        {{ partial "cc0-badge.html" . }}
+      </div>
+    </div>
+  </header>
+
+  <div class="content art-content">
+    {{ .Content }}
+  </div>
+  
+  {{ partial "resources.html" . }}
+  {{ partial "links.html" . }}
+</article>
+{{ end }}
