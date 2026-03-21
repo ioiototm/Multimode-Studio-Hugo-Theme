@@ -1,8 +1,11 @@
 {{ define "main" }}
-  {{ $modes := slice "all" "code" "game" "art" "music" "research" "writing" }}
-  {{ $heroTags := slice "code" "game" "art" "music" "research" "writing" }}
+  {{ $modeData := partial "active-modes.html" . }}
+  {{ $activeModes := $modeData.modes }}
+  {{ $heroTags := $activeModes }}
   {{ $tagIcons := dict "code" "spark" "game" "controller" "art" "palette" "music" "note" "research" "flask" "writing" "pen" }}
   {{ $filterIcons := merge (dict "all" "star") $tagIcons }}
+  {{ $modes := slice "all" }}
+  {{ range $activeModes }}{{ $modes = $modes | append . }}{{ end }}
   {{ $profile := site.Data.profile }}
   {{ $nowPage := site.GetPage "/timeline" }}
   {{ if not $nowPage }}
@@ -143,7 +146,7 @@
             <a href="{{ "/timeline/" | relURL }}" class="text-link" style="font-size: 0.85rem;">View full timeline →</a>
         </div>
         <ul class="timeline-list">
-          {{ $timeline := where site.RegularPages "Section" "in" (slice "art" "posts" "projects" "music" "research" "writing") }}
+          {{ $timeline := where site.RegularPages "Section" "in" $modeData.sections }}
           {{ range first 5 $timeline.ByDate.Reverse }}
             <li>
               <span class="timeline-date">{{ .Date.Format "Jan 02" }}</span>
@@ -155,12 +158,22 @@
     </div>
   </section>
 
-  {{ $signals := slice
-    (dict "label" "Latest project" "section" "/projects" "cta" "/projects/" "tone" "code" "ctaLabel" "projects")
-    (dict "label" "Fresh track" "section" "/music" "cta" "/music/" "tone" "music" "ctaLabel" "music")
-    (dict "label" "Recent research" "section" "/research" "cta" "/research/" "tone" "research" "ctaLabel" "papers")
+  {{ $signalDefs := dict
+    "code"     (dict "label" "Latest project"  "section" "/projects"     "cta" "/projects/"     "ctaLabel" "projects")
+    "game"     (dict "label" "Latest game"     "section" "/streams"      "cta" "/streams/"      "ctaLabel" "games")
+    "art"      (dict "label" "Latest artwork"  "section" "/art"          "cta" "/art/"           "ctaLabel" "artwork")
+    "music"    (dict "label" "Fresh track"     "section" "/music"        "cta" "/music/"         "ctaLabel" "music")
+    "research" (dict "label" "Recent research" "section" "/publications" "cta" "/publications/"  "ctaLabel" "papers")
+    "writing"  (dict "label" "Latest post"     "section" "/posts"        "cta" "/posts/"         "ctaLabel" "posts")
   }}
-  {{ $toneIcons := dict "code" "spark" "music" "note" "research" "flask" }}
+  {{ $signals := slice }}
+  {{ range $activeModes }}
+    {{ $mode := . }}
+    {{ with index $signalDefs $mode }}
+      {{ $signals = $signals | append (merge . (dict "tone" $mode)) }}
+    {{ end }}
+  {{ end }}
+  {{ $toneIcons := dict "code" "spark" "game" "controller" "art" "palette" "music" "note" "research" "flask" "writing" "pen" }}
 
   <section class="signal">
     <div class="signal-grid">

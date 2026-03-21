@@ -6,14 +6,19 @@
   <div class="nav-right">
     <ul class="menu tabs">
       {{ $currentPage := . }}
+      {{ $modeData := partial "active-modes.html" . }}
+      {{ $activeModes := $modeData.modes }}
       {{ range .Site.Menus.main }}
-      <li>
-        <a href="{{ .URL | relURL }}" class="tab-item {{ if or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}active{{ end }}">
-          {{ if .Pre }}{{ partial "icon.html" (dict "name" .Pre "size" 14) }} {{ end }}
-          <span>{{ .Name }}</span>
-          <span class="tab-close">×</span>
-        </a>
-      </li>
+        {{ $mode := .Params.mode | default "" }}
+        {{ if or (eq $mode "") (in $activeModes $mode) }}
+        <li>
+          <a href="{{ .URL | relURL }}" class="tab-item {{ if or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}active{{ end }}">
+            {{ if .Pre }}{{ partial "icon.html" (dict "name" .Pre "size" 14) }} {{ end }}
+            <span>{{ .Name }}</span>
+            <span class="tab-close">×</span>
+          </a>
+        </li>
+        {{ end }}
       {{ end }}
     </ul>
     <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle color theme">

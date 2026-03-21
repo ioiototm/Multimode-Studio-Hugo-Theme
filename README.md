@@ -73,6 +73,8 @@ theme = "multimode-studio"
 [params]
   author = "Your Name"
   terminal_title = "Administrator: my-shell"
+  # Only show these modes on the homepage (default: all six)
+  # modes = ["code", "game", "art", "music", "research", "writing"]
 
   [params.hero]
     title = "Your Name: code + games + art + music + research"
@@ -194,6 +196,33 @@ If you fork this, you might want to change the localStorage key in `mode.js`:
 ```js
 const KEY = "multimode-studio";
 ```
+
+### Choosing modes
+
+By default all six modes are active: `code`, `game`, `art`, `music`, `research`, `writing`.
+If you don't do research, or you only care about art and music, just list what you want:
+
+```toml
+[params]
+  modes = ["art", "music", "writing"]
+```
+
+This controls the homepage hero chips, feed filter, signal cards, timeline, and nav tabs.
+Nav tabs with a matching `mode` param are automatically hidden when that mode is disabled.
+Individual pages in disabled sections still render fine if someone visits them directly —
+they just won't be promoted on the homepage.
+
+---
+
+## Future
+
+Some things that would be nice but aren't done yet:
+
+- **Custom modes** — define your own modes beyond the built-in six, with custom colors and icons
+  (e.g. `electronics`, `photography`). Right now the mode colors and gadget styles are in CSS,
+  so adding new ones means editing the stylesheet.
+- **Configurable signal card count** — currently shows up to 6 (one per active mode), capped by
+  however many modes you have.
 
 ---
 

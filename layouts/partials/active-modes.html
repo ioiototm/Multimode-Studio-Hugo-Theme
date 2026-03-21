@@ -1,0 +1,11 @@
+{{/* Returns a dict with "modes" (active mode names) and "sections" (corresponding Hugo sections) */}}
+{{ $allModes := slice "code" "game" "art" "music" "research" "writing" }}
+{{ $activeModes := default $allModes site.Params.modes }}
+{{ $modeToSection := dict "code" "projects" "game" "streams" "art" "art" "music" "music" "research" "research" "writing" "posts" }}
+{{ $activeSections := slice }}
+{{ range $activeModes }}
+  {{ with index $modeToSection . }}
+    {{ $activeSections = $activeSections | append . }}
+  {{ end }}
+{{ end }}
+{{ return (dict "modes" $activeModes "sections" $activeSections) }}

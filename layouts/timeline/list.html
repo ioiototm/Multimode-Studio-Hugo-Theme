@@ -5,7 +5,8 @@
 </header>
 
 <div class="timeline-container">
-  {{ $pages := where site.RegularPages "Section" "in" (slice "art" "posts" "projects" "music" "research" "writing") }}
+  {{ $modeData := partial "active-modes.html" . }}
+  {{ $pages := where site.RegularPages "Section" "in" $modeData.sections }}
   
   {{ range $pages.GroupByDate "2006" }}
     <div class="timeline-year">
