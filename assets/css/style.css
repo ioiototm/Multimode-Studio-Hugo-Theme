@@ -523,6 +523,7 @@ body{
   transform:translateY(-2px);
   box-shadow:0 25px 50px rgba(0,0,0,0.6);
 }
+.hero-left:hover .me-portrait-download { opacity: 1; }
 
 .portrait-frame img{width:100%;height:100%;object-fit:cover;display:block; border-radius: 4px;}
 .label{font-size:.75rem;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);margin:0 0 6px}
@@ -868,6 +869,102 @@ body{
 
 .me-page{display:flex;flex-direction:column;gap:32px}
 .me-hero{background:var(--panel);border:1px solid var(--border);border-radius:28px;padding:32px;box-shadow:0 30px 60px rgba(3,4,7,.35)}
+
+/* Me Hero: Portrait floated in the hero card */
+.me-portrait-wrap {
+  float: right;
+  margin: 0 0 1rem 1.5rem;
+}
+@media (max-width: 768px) {
+  .me-portrait-wrap {
+    float: none;
+    display: flex;
+    justify-content: center;
+    margin: 0 0 1.5rem 0;
+  }
+  .me-portrait-download { opacity: 0.7; }
+  .me-portrait-download::after { display: none; }
+}
+
+.me-portrait-frame {
+  position: relative;
+  width: 180px;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  background: var(--card);
+  padding: 4px;
+  border: 2px solid transparent;
+  background-image: linear-gradient(var(--card), var(--card)), var(--gradient-omni);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.me-portrait-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+.me-portrait-frame:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Download icon overlay on portrait */
+.me-portrait-download {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+.me-portrait-frame:hover .me-portrait-download { opacity: 1; }
+.me-portrait-download:hover {
+  background: var(--brand);
+  color: var(--bg);
+}
+/* Tooltip */
+.me-portrait-download::after {
+  content: 'Download source (CSP) · CC0';
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.me-portrait-download:hover::after { opacity: 1; }
+
+/* Divider between professional and personal halves */
+.me-divider {
+  border: none;
+  height: 1px;
+  background: var(--gradient-omni);
+  opacity: 0.5;
+  margin: 0.5rem 0;
+}
+
 .me-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:20px 0}
 .me-section{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:0 16px 35px rgba(3,4,7,.25)}
 .section-header{display:flex;flex-direction:column;gap:4px;margin-bottom:16px}
@@ -1857,27 +1954,6 @@ body{
     font-weight: 600;
 }
 
-.story-pullquote {
-    margin: 3rem 0; /* Full width margin */
-    padding: 2rem;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    font-family: var(--font-mono);
-    font-size: 1.15rem;
-    font-style: italic;
-    color: var(--brand);
-    background: var(--panel); /* Adapts to light/dark mode */
-
-    text-align: center;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-.story-pullquote p {
-    margin: 0;
-    color: var(--brand); /* Ensure quote text is colored */
-}
-
 /* Manifesto / Terminal Style */
 .manifesto-card {
   background: var(--terminal-bg);
@@ -1936,6 +2012,87 @@ body{
   flex-shrink: 0; /* Prevent prompt from shrinking */
 }
 
+
+/* README.md Style Card */
+.readme-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.readme-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--card);
+  border-bottom: 2px solid var(--brand);
+  border-right: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--fg);
+}
+
+.readme-icon {
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+}
+
+.readme-filename {
+  font-weight: 500;
+}
+
+.readme-body {
+  padding: 2rem;
+}
+
+.readme-heading {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--fg);
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.readme-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.readme-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--fg);
+  opacity: 0.9;
+}
+
+.readme-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.readme-list li p {
+  margin: 0;
+  display: inline;
+}
+
+.readme-list li strong,
+.readme-list li em {
+  color: var(--brand);
+}
 
 /* Full Timeline Page - Centered Design */
 .timeline-container {

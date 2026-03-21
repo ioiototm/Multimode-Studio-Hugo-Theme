@@ -17,6 +17,11 @@
       <div class="hero-left">
         <figure class="portrait-frame">
           <img src="{{ "img/portrait.png" | relURL }}" alt="Portrait of {{ .name }}" loading="lazy">
+          {{ with .portraitDownload }}
+            <a href="{{ . }}" class="me-portrait-download" title="Download source file (CSP) · CC0" download>
+              <i class="fas fa-download"></i>
+            </a>
+          {{ end }}
         </figure>
         <div class="hero-profile">
           <h2>{{ .name }}</h2>

@@ -178,6 +178,58 @@ modes: ["code", "game"]  # optional, overrides the default lane
 ---
 ```
 
+### Resources & links
+
+Projects (and other content) can have embedded widgets, video players, and download cards
+via the `resources` front matter. They also get simple button-style links via `links`.
+
+```yaml
+---
+title: "My Game"
+links:
+  github: "https://github.com/you/repo"
+  itch: "https://you.itch.io/game"
+resources:
+  - title: "Play on itch.io"
+    type: "itch"
+    id: "1234567"          # the numeric game ID from itch
+
+  - title: "Gameplay Trailer"
+    type: "youtube"
+    id: "dQw4w9WgXcQ"      # the YouTube video ID
+    description: "Optional subtitle text."
+
+  - title: "Source Files"
+    type: "zip"
+    url: "https://files.example.com/source.zip"
+    description: "Full project archive."
+    size: "48 MB"           # optional, auto-calculated for local files
+
+  - title: "Design Document"
+    type: "pdf"
+    url: "/downloads/design-doc.pdf"
+---
+```
+
+**Resource types:**
+
+| `type` | What it renders |
+|--------|----------------|
+| `itch` | Embedded itch.io widget (needs `id`) |
+| `youtube` | Embedded YouTube player (needs `id`) |
+| `zip`, `unity`, `godot`, `code`, `exe` | Download card with code icon |
+| `blender`, `csp`, `psd`, `art`, `image` | Download card with art icon |
+| `flp`, `wav`, `mp3`, `music`, `audio` | Download card with music icon |
+| `video`, `timelapse`, `mp4` | Download card with video icon |
+| `pdf` or anything else | Download card with document icon |
+
+Each type gets a matching accent color from the mode palette (`--tone-game`, `--tone-art`, etc.).
+Local files (paths starting with `/`) get their size auto-calculated if you don't set `size`.
+
+**Links** show up as simple buttons below the resources. Supported keys:
+`demo`, `github`, `pdf`, `doi`, `video`, and anything else (auto-capitalised).
+`itch` is excluded from link buttons since it gets its own embedded widget.
+
 ---
 
 ## Styling
