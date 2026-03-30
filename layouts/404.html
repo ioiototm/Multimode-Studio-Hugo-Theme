@@ -1,0 +1,59 @@
+{{ define "main" }}
+<div class="page-404">
+  <div class="footer-container">
+    <div class="terminal-footer">
+      <div class="terminal-header">
+        <div class="terminal-tab">
+          <span class="terminal-icon">_></span>
+          <span class="terminal-title">{{ .Site.Data.profile.terminalTitle | default "Administrator: multimode-sh" }}</span>
+        </div>
+        <div class="terminal-controls">
+          <span class="control minimize">_</span>
+          <span class="control maximize">□</span>
+          <span class="control close">×</span>
+        </div>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line">
+          <span class="prompt">PS C:\Users\visitor></span> <span class="cmd">cat <span id="err-file">this-page</span></span>
+        </div>
+        <div class="terminal-output">
+          <span style="color: var(--tone-research); font-weight: 700;">cat : Cannot find path 'C:\Users\visitor\<span id="err-path">404.html</span>'</span>
+        </div>
+        <div class="terminal-output">because it does not exist.</div>
+        <div class="terminal-line" style="margin-top: 8px;">
+          <span class="prompt">PS C:\Users\visitor></span> <span class="cmd">echo "Maybe try one of these?"</span>
+        </div>
+        <div class="terminal-output">Maybe try one of these?</div>
+        <div class="terminal-line" style="margin-top: 8px;">
+          <span class="prompt">PS C:\Users\visitor></span> <span class="cmd">ls ./</span>
+        </div>
+        <div class="terminal-output social-output">
+          {{ range .Site.Menus.main }}
+            <a href="{{ .URL | relURL }}" class="terminal-link" {{ with .Params.mode }}data-tone="{{ . }}"{{ else }}data-tone="code"{{ end }}>{{ .Name }}</a>
+          {{ end }}
+        </div>
+        <div class="terminal-line" style="margin-top: 8px;">
+          <span class="prompt">PS C:\Users\visitor></span> <span class="cmd">cat copyright.txt</span>
+        </div>
+        <div class="terminal-output">
+          {{ with .Site.Data.profile.links.repo }}<a href="{{ . }}" target="_blank" rel="noopener" class="terminal-link" data-tone="code">{{ . | strings.TrimPrefix "https://" }}</a>{{ else }}{{ $.Site.Title }}{{ end }} · {{ $.Site.Params.copyright | default "CC0 1.0 Universal" }}.
+        </div>
+        <div class="terminal-line" style="margin-top: 8px;">
+          <span class="prompt">PS C:\Users\visitor></span> <span class="cursor">_</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="btn ghost" href="{{ "/" | relURL }}">cd ~/home</a>
+</div>
+<script>
+(function(){
+  var p = window.location.pathname.replace(/^\/+|\/+$/g, '') || '404';
+  var file = document.getElementById('err-file');
+  var path = document.getElementById('err-path');
+  if(file) file.textContent = p;
+  if(path) path.textContent = p;
+})();
+</script>
+{{ end }}

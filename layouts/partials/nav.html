@@ -15,7 +15,6 @@
           <a href="{{ .URL | relURL }}" class="tab-item {{ if or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}active{{ end }}">
             {{ if .Pre }}{{ partial "icon.html" (dict "name" .Pre "size" 14) }} {{ end }}
             <span>{{ .Name }}</span>
-            <span class="tab-close">×</span>
           </a>
         </li>
         {{ end }}

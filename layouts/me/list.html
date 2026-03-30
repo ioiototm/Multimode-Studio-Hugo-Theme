@@ -23,7 +23,14 @@
 
         <p class="eyebrow">About {{ .name }}</p>
         <h1>{{ .name }}</h1>
-        <p class="lede">{{ .intro }}</p>
+        {{ with .longform.paragraphs }}
+          <p class="lede">{{ index . 0 | markdownify }}</p>
+          {{ if gt (len .) 1 }}
+            <p class="me-closing">{{ index . (sub (len .) 1) | markdownify }}</p>
+          {{ end }}
+        {{ else }}
+          <p class="lede">{{ $.intro }}</p>
+        {{ end }}
 
         <div class="me-meta">
           <div>
@@ -70,16 +77,18 @@
 
       {{/* SECTION 2: Skills snapshot */}}
       {{ with .skills }}
+        {{ $catTones := dict "Programming" "code" "Game Dev" "game" "Creative" "art" "Music" "music" "Research" "research" "Writing" "writing" }}
         <section class="me-section">
           <h2>Skills snapshot</h2>
           <div class="skills-grid">
             {{ range . }}
+              {{ $tone := index $catTones .category | default "code" }}
               <div class="skill-category">
                 <h3>{{ .category }}</h3>
                 <ul class="skill-list">
                   {{ range .items }}
                     {{ if reflect.IsMap . }}
-                      <li><i class="{{ .icon }}"></i> <span>{{ .name }}</span></li>
+                      <li><i class="{{ .icon }}" style="color: var(--tone-{{ $tone }});"></i> <span>{{ .name }}</span></li>
                     {{ else }}
                       <li>{{ . }}</li>
                     {{ end }}
@@ -149,22 +158,7 @@
            Story, passions, manifesto
            ═══════════════════════════════════════════════════════ */}}
 
-      {{/* SECTION 4: Longform story */}}
-      {{ with .longform.paragraphs }}
-        <section class="me-section me-story">
-          <div class="story-copy">
-            {{ range $i, $p := . }}
-              {{ if eq $i 0 }}
-                <p class="story-lead">{{ $p | markdownify }}</p>
-              {{ else }}
-                <p>{{ $p | markdownify }}</p>
-              {{ end }}
-            {{ end }}
-          </div>
-        </section>
-      {{ end }}
-
-      {{/* SECTION 5: Working on + Passions (side by side) */}}
+      {{/* SECTION 4: Working on + Passions (side by side) */}}
       {{ if or .workingOn .passions }}
         <section class="me-section">
           <div class="me-grid">

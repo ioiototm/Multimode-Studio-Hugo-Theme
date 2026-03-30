@@ -90,156 +90,83 @@
         <div class="hero-right">
       <div class="hero-primary">
         <p class="eyebrow">{{ .Site.Data.profile.hero.tagline | default "Creative Research & Archives" }}</p>
-        <h1>{{ .Site.Data.profile.hero.title }}</h1>
+        <h1 id="hero-title">{{ .Site.Data.profile.hero.title }}</h1>
         <p class="lede">{{ .Site.Data.profile.hero.subtitle | markdownify }}</p>
+        <a href="/cc0/" class="cc0-badge" title="Most of my work is released under CC0">
+          <i class="fab fa-creative-commons"></i>
+          <i class="fab fa-creative-commons-zero"></i>
+          <span>No rights reserved</span>
+        </a>
         <div class="hero-cta">
           <a class="btn primary" href="{{ "/projects/" | relURL }}">Explore projects</a>
           <a class="btn ghost" href="{{ "/posts/" | relURL }}">Read the blog</a>
         </div>
-        <ul class="hero-tags">
-          {{ range $heroTags }}
-            <li class="chip hero-chip mode" data-mode="{{ . }}" role="button" tabindex="0">
-              {{ with index $tagIcons . }}
-                {{ partial "icon.html" (dict "name" . "size" 16) }}
-              {{ end }}
-              <span>{{ . | title }}</span>
-            </li>
-          {{ end }}
-        </ul>
+        <a class="hero-scroll" href="#feed" onclick="event.preventDefault();document.getElementById('feed').scrollIntoView({behavior:'smooth',block:'start'})">Browse the feed ↓</a>
       </div>
     </div>
   </section>
-  <section class="hero-highlights">
-    {{ with $profile }}
-      <div class="fold-card">
-        <div class="fold-card-header">
-          <div>
-            <p class="eyebrow">Deep dive</p>
-            <h2>Story, focus, skills & timeline</h2>
-          </div>
-          <ul class="fold-highlights">
-            <li>
-              <span class="fact-label">Role</span>
-              <strong>{{ .role | markdownify }}</strong>
-            </li>
-            {{ range first 1 .education }}
-              <li>
-                <span class="fact-label">Top education</span>
-                <strong>{{ .degree | markdownify }} @ {{ .place | markdownify }}</strong>
-              </li>
-            {{ end }}
-            {{ range first 1 .workingOn }}
-              <li>
-                <span class="fact-label">Current focus</span>
-                <strong>{{ .title | markdownify }}</strong>
-              </li>
-            {{ end }}
-          </ul>
-        </div>
-        {{ with .tagline }}<p class="fold-tagline">{{ . }}</p>{{ end }}
-        <div class="about-actions">
-          <a class="btn primary" href="{{ "/me/" | relURL }}">Full bio & timeline</a>
-          <a class="btn ghost" href="{{ "/timeline/" | relURL }}">See the timeline</a>
-        </div>
-      </div>
-    {{ end }}
-
-    <div class="hero-panel">
-      <div class="signal-note" style="border-top: none; margin-top: 0; padding-top: 0; width: 100%;">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
-            <p class="label" style="margin: 0;">Recent Activity</p>
-            <a href="{{ "/timeline/" | relURL }}" class="text-link" style="font-size: 0.85rem;">View full timeline →</a>
-        </div>
-        <ul class="timeline-list">
-          {{ $timeline := where site.RegularPages "Section" "in" $modeData.sections }}
-          {{ range first 5 $timeline.ByDate.Reverse }}
-            <li>
-              <span class="timeline-date">{{ .Date.Format "Jan 02" }}</span>
-              <a href="{{ .RelPermalink }}" class="timeline-link">{{ .Title }}</a>
-            </li>
-          {{ end }}
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  {{ $signalDefs := dict
-    "code"     (dict "label" "Latest project"  "section" "/projects"     "cta" "/projects/"     "ctaLabel" "projects")
-    "game"     (dict "label" "Latest game"     "section" "/streams"      "cta" "/streams/"      "ctaLabel" "games")
-    "art"      (dict "label" "Latest artwork"  "section" "/art"          "cta" "/art/"           "ctaLabel" "artwork")
-    "music"    (dict "label" "Fresh track"     "section" "/music"        "cta" "/music/"         "ctaLabel" "music")
-    "research" (dict "label" "Recent research" "section" "/publications" "cta" "/publications/"  "ctaLabel" "papers")
-    "writing"  (dict "label" "Latest post"     "section" "/posts"        "cta" "/posts/"         "ctaLabel" "posts")
-  }}
-  {{ $signals := slice }}
-  {{ range $activeModes }}
-    {{ $mode := . }}
-    {{ with index $signalDefs $mode }}
-      {{ $signals = $signals | append (merge . (dict "tone" $mode)) }}
-    {{ end }}
+  {{ with .Site.Data.profile.hero.titleEndings }}
+  <script>
+  (function(){
+    var endings={{ . | jsonify | safeJS }};
+    var h=document.getElementById('hero-title');
+    if(h&&endings.length>1){
+      var prefix={{ $.Site.Data.profile.hero.titlePrefix | jsonify | safeJS }};
+      h.textContent=prefix+endings[Math.floor(Math.random()*endings.length)];
+    }
+  })();
+  </script>
   {{ end }}
-  {{ $toneIcons := dict "code" "spark" "game" "controller" "art" "palette" "music" "note" "research" "flask" "writing" "pen" }}
 
-  <section class="signal">
-    <div class="signal-grid">
-      {{ range $signals }}
-        {{ $signal := . }}
-        {{ with site.GetPage $signal.section }}
-          {{ with first 1 .Pages.ByDate.Reverse }}
-            {{ $page := index . 0 }}
-            <article class="signal-card" data-tone="{{ $signal.tone }}">
-              <p class="label signal-label">
-                {{ with index $toneIcons $signal.tone }}
-                  {{ partial "icon.html" (dict "name" . "size" 15) }}
-                {{ end }}
-                <span>{{ $signal.label }}</span>
-              </p>
-              <a class="signal-link" href="{{ $page.RelPermalink }}">
-                <span>{{ $page.Title }}</span>
-                <span aria-hidden="true">→</span>
-              </a>
-              <p class="signal-summary">
-                {{ with $page.Params.summary }}
-                  {{ . }}
-                {{ else }}
-                  {{ $page.Summary | plainify | truncate 120 }}
-                {{ end }}
-              </p>
-              <a class="text-link" href="{{ $signal.cta | relURL }}">See all {{ $signal.ctaLabel }}</a>
-            </article>
-          {{ end }}
-        {{ end }}
+  {{ $timeline := where site.RegularPages "Section" "in" $modeData.sections }}
+  {{ $recentItems := first 5 $timeline.ByDate.Reverse }}
+  {{ if gt (len $recentItems) 0 }}
+  <div class="lately-strip">
+    <span class="lately-label">Recently</span>
+    <ul class="lately-items">
+      {{ range $recentItems }}
+        <li>
+          <a href="{{ .RelPermalink }}" class="lately-item">
+            <time class="lately-date">{{ .Date.Format "Jan 2" }}</time>
+            <span class="lately-title">{{ .Title }}</span>
+          </a>
+        </li>
       {{ end }}
-    </div>
-  </section>
-
-
+    </ul>
+    <a href="{{ "/timeline/" | relURL }}" class="lately-more">All activity →</a>
+  </div>
+  {{ end }}
 
   <section class="feed">
     <div class="feed-header">
-      <div>
-        <p class="eyebrow">Latest drops from every lane</p>
-        <h2>Multi-mode feed</h2>
-        <p class="muted">Filter the stream to focus on code, art, music, research, or writing.</p>
-      </div>
-      <div class="modes">
-        {{ range $modes }}
-          <button class="mode chip" data-mode="{{ . }}" type="button">
-            {{ with index $filterIcons . }}
-              {{ partial "icon.html" (dict "name" . "size" 14) }}
-            {{ end }}
-            <span>{{ . | title }}</span>
-          </button>
-        {{ end }}
-      </div>
+      <p class="eyebrow">Latest drops from every lane</p>
+      <h2>Multi-mode feed</h2>
+    </div>
+    <div class="feed-filters">
+      {{ range $modes }}
+        <button class="mode chip" data-mode="{{ . }}" type="button">
+          {{ with index $filterIcons . }}
+            {{ partial "icon.html" (dict "name" . "size" 14) }}
+          {{ end }}
+          <span>{{ . | title }}</span>
+        </button>
+      {{ end }}
     </div>
     <div class="grid" id="feed">
-      {{ range first 18 (.Site.RegularPages.ByDate.Reverse) }}
+      {{ range first 6 (.Site.RegularPages.ByDate.Reverse) }}
+        {{ partial "card.html" . }}
+      {{ end }}
+    </div>
+    <div class="grid grid-overflow" id="feed-overflow" hidden>
+      {{ range after 6 (first 18 (.Site.RegularPages.ByDate.Reverse)) }}
         {{ partial "card.html" . }}
       {{ end }}
     </div>
     <div class="feed-empty" id="feed-empty" hidden>
       <p class="feed-empty-msg">Nothing here yet. Check back later — or don't, I'm not your boss.</p>
+    </div>
+    <div class="feed-load-more" id="feed-load-more">
+      <button class="btn ghost" id="load-more-btn" type="button">Load more</button>
     </div>
   </section>
 {{ end }}

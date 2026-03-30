@@ -7,35 +7,63 @@
 <div class="timeline-container">
   {{ $modeData := partial "active-modes.html" . }}
   {{ $pages := where site.RegularPages "Section" "in" $modeData.sections }}
-  
+  {{ $aliases  := dict "publications" "research" "posts" "writing" "projects" "code" "streams" "game" }}
+  {{ $toneVars := dict "code" "#2a9df4" "game" "#ff6fb7" "art" "#ffc840" "music" "#9c8cff" "research" "#ff5828" "writing" "#7dd87c" }}
+
   {{ range $pages.GroupByDate "2006" }}
     <div class="timeline-year">
       <h2 class="year-label">{{ .Key }}</h2>
       <ul class="timeline-full-list">
         {{ range .Pages }}
-          <li class="timeline-entry" data-type="{{ .Section }}">
-            <span class="timeline-date">{{ .Date.Format "Jan 02" }}</span>
-            {{/* Thumbnail Logic */}}
-            {{ $thumb := "" }}
-            {{ if .Params.image }}
-              {{ $thumb = .Params.image }}
-            {{ else if .Params.cover }}
-              {{ $thumb = .Params.cover.image }}
-            {{ end }}
+          {{ $section  := .Section }}
+          {{ $baseMode := index $aliases $section | default $section }}
+          {{ $rawModes := default (slice $baseMode) .Params.modes }}
+          {{ $modes    := apply $rawModes "lower" "." }}
 
-            <div class="timeline-card">
-                {{ if $thumb }}
+          {{/* Primary tone = section alias, not modes list */}}
+          {{ $primaryHex := index $toneVars $baseMode | default "#ff9248" }}
+
+          {{/* Build accent — smooth blended gradient */}}
+          {{ $n := len $modes }}
+          {{ $accentVal := $primaryHex }}
+          {{ if gt $n 1 }}
+            {{ $stops := slice }}
+            {{ $step  := div 100.0 (sub $n 1) }}
+            {{ range $i, $m := $modes }}
+              {{ $hex := index $toneVars $m | default "#ff9248" }}
+              {{ $pct := printf "%.0f%%" (mul $i $step) }}
+              {{ $stops = $stops | append (printf "%s %s" $hex $pct) }}
+            {{ end }}
+            {{ $accentVal = printf "linear-gradient(180deg, %s)" (delimit $stops ", ") }}
+          {{ end }}
+
+          {{/* Thumbnail */}}
+          {{ $thumb := "" }}
+          {{ if .Params.image }}
+            {{ $thumb = .Params.image }}
+          {{ else if .Params.cover }}
+            {{ $thumb = .Params.cover.image }}
+          {{ end }}
+
+          <li class="timeline-entry" data-type="{{ $section }}">
+            <span class="timeline-date">{{ .Date.Format "Jan 02" }}</span>
+            <div class="timeline-card" style="--card-primary-tone: {{ $primaryHex }};">
+              <div class="timeline-accent" style="background: {{ $accentVal | safeCSS }};"></div>
+              {{ if $thumb }}
                 <div class="timeline-thumb">
-                    <img src="{{ $thumb }}" alt="" loading="lazy">
+                  <img src="{{ $thumb }}" alt="" loading="lazy">
                 </div>
-                {{ end }}
-                <div class="timeline-info">
-                    <div class="timeline-meta">
-                        <span class="timeline-type tag-{{ .Section }}">{{ .Section | title }}</span>
-                    </div>
-                    <a href="{{ .RelPermalink }}" class="timeline-title">{{ .Title }}</a>
-                    {{ with .Summary }}<p class="timeline-summary">{{ . | plainify | truncate 120 }}</p>{{ end }}
+              {{ end }}
+              <div class="timeline-info">
+                <div class="timeline-meta">
+                  {{ range $modes }}
+                    {{ $hex := index $toneVars . | default "#ff9248" }}
+                    <span class="timeline-type" style="color:{{ $hex }};border-color:{{ $hex }};">{{ . | title }}</span>
+                  {{ end }}
                 </div>
+                <a href="{{ .RelPermalink }}" class="timeline-title">{{ .Title }}</a>
+                {{ with .Summary }}<p class="timeline-summary">{{ . | plainify | truncate 120 }}</p>{{ end }}
+              </div>
             </div>
           </li>
         {{ end }}

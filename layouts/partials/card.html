@@ -4,7 +4,7 @@
 {{ $iconMap := dict "code" "spark" "game" "controller" "art" "palette" "music" "note" "research" "flask" "writing" "pen" "projects" "spark" "streams" "wave" }}
 {{ $iconName := index $iconMap $mode }}
 {{ $palette := slice "code" "game" "art" "music" "research" "writing" }}
-{{ $toneVars := dict "code" "#2a9df4" "game" "#ff6fb7" "art" "#ffb347" "music" "#9c8cff" "research" "#ff9248" "writing" "#7dd87c" }}
+{{ $toneVars := dict "code" "#2a9df4" "game" "#ff6fb7" "art" "#ffc840" "music" "#9c8cff" "research" "#ff5828" "writing" "#7dd87c" }}
 {{ $defaultMode := cond (in $palette $mode) $mode "code" }}
 {{ $cardModes := default (slice $defaultMode) .Params.modes }}
 {{ $cardModes = apply $cardModes "lower" "." }}
