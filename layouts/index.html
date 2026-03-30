@@ -101,7 +101,7 @@
           <a class="btn primary" href="{{ "/projects/" | relURL }}">Explore projects</a>
           <a class="btn ghost" href="{{ "/posts/" | relURL }}">Read the blog</a>
         </div>
-        <a class="hero-scroll" href="#feed" onclick="event.preventDefault();document.getElementById('feed').scrollIntoView({behavior:'smooth',block:'start'})">Browse the feed ↓</a>
+        <a class="hero-scroll" href="#feed-section" onclick="event.preventDefault();document.getElementById('feed-section').scrollIntoView({behavior:'smooth',block:'start'})">Browse the feed ↓</a>
       </div>
     </div>
   </section>
@@ -137,7 +137,7 @@
   </div>
   {{ end }}
 
-  <section class="feed">
+  <section class="feed" id="feed-section">
     <div class="feed-header">
       <p class="eyebrow">Latest drops from every lane</p>
       <h2>Multi-mode feed</h2>
