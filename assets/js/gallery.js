@@ -11,18 +11,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!total) return;
 
-    function goTo(idx) {
+    const strip = gallery.querySelector(".gallery-thumbs");
+
+    function goTo(idx, scrollStrip = true) {
       current = ((idx % total) + total) % total;
       slides.forEach((s) => s.classList.remove("active"));
       thumbs.forEach((t) => t.classList.remove("active"));
       slides[current].classList.add("active");
       if (thumbs[current]) {
         thumbs[current].classList.add("active");
-        thumbs[current].scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
+        // Scroll only the thumbnail strip sideways (scrollIntoView would also scroll the page)
+        if (scrollStrip && strip) {
+          const t = thumbs[current].getBoundingClientRect();
+          const st = strip.getBoundingClientRect();
+          strip.scrollBy({ left: t.left - st.left - (st.width - t.width) / 2, behavior: "smooth" });
+        }
       }
       if (counter) counter.textContent = `${current + 1} / ${total}`;
     }
@@ -60,6 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Initialize counter
-    goTo(0);
+    goTo(0, false);
   });
 });
