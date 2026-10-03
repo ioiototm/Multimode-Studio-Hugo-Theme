@@ -1,0 +1,47 @@
+{{/* Skills cloud: one word per skill, coloured by mode(s), sized by level (1-4).
+     Expects a list of {name, modes, level, note}. Level labels can be overridden
+     with site.Data.profile.skillLevels (a map of "1".."4" -> label). */}}
+{{ $skills := . }}
+{{ $labels := dict "1" "dabbled / googled it once" "2" "getting there" "3" "use it a lot" "4" "know it well" }}
+{{ with site.Data.profile.skillLevels }}{{ $labels = merge $labels . }}{{ end }}
+{{ $modeOrder := slice "code" "game" "art" "music" "research" "writing" }}
+{{ $present := slice }}
+{{ range $skills }}{{ range .modes }}{{ $present = $present | append . }}{{ end }}{{ end }}
+{{ $present = uniq $present }}
+<section class="me-section skills-cloud-section">
+  <h2>Skills, roughly</h2>
+  <p class="skills-cloud-hint">Bigger = more comfortable. Hover or tap one for details.</p>
+  <div class="skills-cloud-filters" role="group" aria-label="Filter skills by mode">
+    <button type="button" class="chip skill-filter" data-mode="all" aria-pressed="true">all</button>
+    {{ range $modeOrder }}{{ if in $present . }}
+    <button type="button" class="chip skill-filter" data-mode="{{ . }}" aria-pressed="false">{{ . }}</button>
+    {{ end }}{{ end }}
+  </div>
+  <ul class="skills-cloud" data-filter="all">
+    {{ range shuffle $skills }}
+      {{ $lvl := .level | default 2 }}
+      {{ $label := index $labels (string $lvl) }}
+      {{ $modes := .modes | default (slice "code") }}
+      {{ $style := "" }}
+      {{ if gt (len $modes) 1 }}
+        {{ $stops := slice }}
+        {{ range $modes }}{{ $stops = $stops | append (printf "var(--tone-%s)" .) }}{{ end }}
+        {{ $style = printf "--skill-fill: linear-gradient(90deg, %s);" (delimit $stops ", ") }}
+      {{ else }}
+        {{ $style = printf "--skill-fill: linear-gradient(90deg, var(--tone-%s), var(--tone-%s));" (index $modes 0) (index $modes 0) }}
+      {{ end }}
+      <li>
+        <button type="button" class="skill-word lvl-{{ $lvl }}{{ if gt (len $modes) 1 }} multi{{ end }}"
+          style="{{ $style | safeCSS }}"
+          data-modes="{{ delimit $modes " " }}"
+          data-level-label="{{ $label }}"
+          {{ with .note }}data-note="{{ . }}"{{ end }}>
+          {{ if and site.Data.profile.skillIcons .icon }}<i class="skill-icon {{ .icon }}" aria-hidden="true"></i>{{ end }}<span class="skill-name">{{ .name }}</span><span class="skills-sr">, {{ delimit $modes " and " }}, {{ $label }}{{ with .note }}. {{ . }}{{ end }}</span>
+        </button>
+      </li>
+    {{ end }}
+  </ul>
+  <p class="skill-readout" aria-live="polite"><span class="skill-readout-prompt">&gt;</span> <span class="skill-readout-text">pick a skill</span></p>
+</section>
+{{ $js := resources.Get "js/skills-cloud.js" | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>

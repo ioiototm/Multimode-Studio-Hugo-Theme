@@ -3359,3 +3359,33 @@ body:has(.page-404) .site-footer {
     margin-top: 8px;
 }
 
+
+/* ---------- Skills cloud (Me page) ---------- */
+.skills-cloud-hint{color:var(--muted);margin:-4px 0 14px;font-size:.9rem}
+.skills-cloud-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.skill-filter[aria-pressed="true"]{border-color:var(--chip-color);box-shadow:0 0 0 1px var(--chip-color) inset}
+.skills-cloud{list-style:none;margin:0;padding:8px 0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 18px}
+.skills-cloud li{margin:0;padding:0}
+.skill-word{
+  background:var(--skill-fill);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  border:none;padding:2px 4px;cursor:pointer;font-family:var(--font-mono);
+  line-height:1.1;letter-spacing:-.02em;
+  transition:transform .15s ease, opacity .2s ease, filter .2s ease;
+}
+.skill-word.lvl-1{font-size:.85rem;font-weight:500;opacity:.85}
+.skill-word.lvl-2{font-size:1.15rem;font-weight:600}
+.skill-word.lvl-3{font-size:1.6rem;font-weight:700}
+.skill-word.lvl-4{font-size:2.2rem;font-weight:800}
+.skill-word:hover,.skill-word:focus-visible,.skill-word.pinned{transform:translateY(-2px) scale(1.06)}
+.skill-word:focus-visible{outline:2px dashed var(--muted);outline-offset:3px;border-radius:4px}
+.skill-word.pinned{text-decoration:underline;text-decoration-color:var(--muted);-webkit-text-decoration-color:var(--muted)}
+.skill-icon{font-size:.8em;margin-right:.3em;vertical-align:.05em}
+.skill-icon::before{-webkit-text-fill-color:transparent}
+.skill-word.dim{opacity:.15;filter:grayscale(1)}
+.skills-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skill-readout{font-family:var(--font-mono);font-size:.85rem;color:var(--muted);border-top:1px solid var(--border);margin:16px 0 0;padding-top:12px;min-height:1.5em}
+.skill-readout-prompt{color:var(--tone-code)}
+@media(max-width:600px){.skill-word.lvl-4{font-size:1.7rem}.skill-word.lvl-3{font-size:1.3rem}.skills-cloud{gap:4px 12px}}
+@media(prefers-reduced-motion:reduce){.skill-word{transition:none}}

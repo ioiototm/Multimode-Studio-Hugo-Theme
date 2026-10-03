@@ -77,6 +77,9 @@
 
       {{/* SECTION 2: Skills snapshot */}}
       {{ with .skills }}
+        {{ if (index . 0).name }}
+          {{ partial "skills-cloud.html" . }}
+        {{ else }}
         {{ $catTones := dict "Programming" "code" "Game Dev" "game" "Creative" "art" "Music" "music" "Research" "research" "Writing" "writing" }}
         <section class="me-section">
           <h2>Skills snapshot</h2>
@@ -98,6 +101,7 @@
             {{ end }}
           </div>
         </section>
+              {{ end }}
       {{ end }}
 
       {{/* SECTION 3: Timeline — experience + education */}}
