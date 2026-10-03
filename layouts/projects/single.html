@@ -23,7 +23,7 @@
     <h1 class="project-title">{{ .Title }}</h1>
     
     <div class="project-meta">
-      <time datetime="{{ .Date }}">{{ .Date.Format "2006" }}</time>
+      <time datetime="{{ .Date }}">{{ .Date.Format "January 2006" }}</time>
       {{ if .Params.links.github }}
         <span>·</span> <a href="{{ .Params.links.github }}" target="_blank" class="text-link">GitHub</a>
       {{ end }}
