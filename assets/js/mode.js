@@ -12,6 +12,11 @@
   };
   const emptyState = document.getElementById("feed-empty");
   let expanded = false;
+  // Merge the overflow cards into the main grid so filtered results line up in one grid
+  const firstPageSize = feedGrid ? feedGrid.querySelectorAll(".card").length : 0;
+  if(feedGrid && overflowGrid){
+    Array.from(overflowGrid.querySelectorAll(".card")).forEach(c => feedGrid.appendChild(c));
+  }
 
   function getAllCards(){
     const main = feedGrid ? Array.from(feedGrid.querySelectorAll(".card")) : [];
@@ -22,31 +27,16 @@
   function apply(mode){
     const activeMode = normalize(mode);
     document.documentElement.setAttribute("data-mode", activeMode);
-    const { main, overflow, all } = getAllCards();
-    let visibleMain = 0;
-    let visibleOverflow = 0;
-    main.forEach(c=>{
-      const cardModes = splitModes(c);
-      const match = activeMode === "all" || cardModes.includes(activeMode);
-      c.style.display = match ? "" : "none";
-      if(match) visibleMain++;
-    });
-    overflow.forEach(c=>{
-      const cardModes = splitModes(c);
-      const match = activeMode === "all" || cardModes.includes(activeMode);
-      c.style.display = match ? "" : "none";
-      if(match) visibleOverflow++;
-    });
-    const totalVisible = visibleMain + visibleOverflow;
-    if(emptyState) emptyState.hidden = totalVisible > 0;
-    // Show/hide load more button
-    if(loadMoreWrap){
-      if(expanded || visibleOverflow === 0){
-        loadMoreWrap.hidden = true;
-      } else {
-        loadMoreWrap.hidden = false;
-      }
-    }
+    const { all } = getAllCards();
+    // Page size = how many cards the first batch had. Filtering works across ALL cards
+    // (first batch + overflow), so a filter always fills the first page with matches.
+    const pageSize = firstPageSize || all.length;
+    const matches = all.filter(c => activeMode === "all" || splitModes(c).includes(activeMode));
+    all.forEach(c => { c.style.display = "none"; });
+    matches.forEach((c, i) => { c.style.display = (expanded || i < pageSize) ? "" : "none"; });
+    if(overflowGrid) overflowGrid.hidden = false;
+    if(emptyState) emptyState.hidden = matches.length > 0;
+    if(loadMoreWrap) loadMoreWrap.hidden = expanded || matches.length <= pageSize;
     buttons.forEach(b=>{
       const btnMode = normalize(b.dataset.mode);
       const isActive = btnMode === activeMode;
@@ -59,8 +49,7 @@
   if(loadMoreBtn){
     loadMoreBtn.addEventListener("click", ()=>{
       expanded = true;
-      if(overflowGrid) overflowGrid.hidden = false;
-      if(loadMoreWrap) loadMoreWrap.hidden = true;
+      apply(document.documentElement.getAttribute("data-mode"));
     });
   }
 
