@@ -53,7 +53,7 @@
               {{ end }}
               {{ $grad := delimit $stops ", " }}
               <a href="{{ .url }}" target="_blank" rel="noopener" aria-label="{{ .name }}" class="multi-tone-btn" style="--btn-gradient: conic-gradient(from 180deg at 50% 50%, {{ $grad | safeCSS }}); --btn-color: var(--tone-{{ index .tones 0 }});">
-                <i class="{{ .icon }}"></i>
+                {{ partial "social-icon.html" . }}
               </a>
             {{ end }}
           </div>
@@ -80,7 +80,7 @@
               {{ end }}
               {{ $grad := delimit $stops ", " }}
               <a href="{{ .url }}" target="_blank" rel="noopener" aria-label="{{ .name }}" class="multi-tone-btn" style="--btn-gradient: conic-gradient(from 180deg at 50% 50%, {{ $grad | safeCSS }}); --btn-color: var(--tone-{{ index .tones 0 }});">
-                <i class="{{ .icon }}"></i>
+                {{ partial "social-icon.html" . }}
               </a>
             {{ end }}
           </div>

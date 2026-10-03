@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (targetLs.node.isSocialDir) {
                             const items = Object.values(targetLs.node.children).map(node => {
                                 const meta = node.meta;
-                                return `<a href="${meta.url}" target="_blank" class="terminal-link" style="color: ${meta.color}"><i class="${meta.icon}"></i> [${meta.name}]</a>`;
+                                return `<a href="${meta.url}" target="_blank" class="terminal-link" style="color: ${meta.color}">${meta.image ? `<img class="social-img" src="${meta.image}" alt="">` : `<i class="${meta.icon}"></i>`} [${meta.name}]</a>`;
                             });
                             output = `<div class="social-output">${items.join(' ')}</div>`;
                             outputIsHtml = true;

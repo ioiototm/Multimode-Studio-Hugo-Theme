@@ -1,4 +1,4 @@
-{{/* Gallery shortcode: each inner line is "filename | caption" */}}
+{{/* Gallery shortcode: each inner line is "filename | caption" (filename can also be a full http(s) URL) */}}
 
 {{ $folder := .Get "folder" }}
 {{ $raw := .Inner }}
@@ -19,7 +19,7 @@
             {{ $caption = trim (index $parts 1) " \t" }}
           {{ end }}
           <figure class="gallery-slide{{ if eq $idx 0 }} active{{ end }}" data-index="{{ $idx }}">
-            <img src="{{ $folder }}/{{ $file }}" alt="{{ $caption }}" loading="lazy">
+            <img src="{{ if hasPrefix $file "http" }}{{ $file }}{{ else }}{{ $folder }}/{{ $file }}{{ end }}" alt="{{ $caption }}" loading="lazy">
             {{ if $caption }}<figcaption>{{ $caption }}</figcaption>{{ end }}
           </figure>
           {{ $idx = add $idx 1 }}
@@ -42,7 +42,7 @@
           {{ $caption = trim (index $parts 1) " \t" }}
         {{ end }}
         <button class="gallery-thumb{{ if eq $idx 0 }} active{{ end }}" data-index="{{ $idx }}" aria-label="{{ $caption }}">
-          <img src="{{ $folder }}/{{ $file }}" alt="" loading="lazy">
+          <img src="{{ if hasPrefix $file "http" }}{{ $file }}{{ else }}{{ $folder }}/{{ $file }}{{ end }}" alt="" loading="lazy">
         </button>
         {{ $idx = add $idx 1 }}
       {{ end }}

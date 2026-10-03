@@ -25,7 +25,7 @@
       <div class="terminal-output social-output">
         {{ with .Site.Data.profile.social }}
           {{ range . }}
-            <a href="{{ .url }}" target="_blank" rel="noopener" class="terminal-link" data-tone="{{ index .tones 0 }}"><i class="{{ .icon }}"></i> [{{ .name }}]</a> 
+            <a href="{{ .url }}" target="_blank" rel="noopener" class="terminal-link" data-tone="{{ index .tones 0 }}">{{ partial "social-icon.html" . }} [{{ .name }}]</a> 
           {{ end }}
         {{ end }}
       </div>
@@ -51,6 +51,7 @@
         name: "{{ .name }}",
         url: "{{ .url }}",
         icon: "{{ .icon }}",
+        image: "{{ .image }}",
         color: "{{ index $colors 0 }}"
       });
     {{ end }}
@@ -70,7 +71,7 @@
       <p>© {{ now.Format "2006" }} {{ .Site.Data.profile.name }}. All rights reserved.</p>
       <div class="social-links">
         {{ with .Site.Data.profile.social }}
-          {{ range . }}<a href="{{ .url }}" target="_blank" rel="noopener"><i class="{{ .icon }}"></i> [{{ .name }}]</a> {{ end }}
+          {{ range . }}<a href="{{ .url }}" target="_blank" rel="noopener">{{ partial "social-icon.html" . }} [{{ .name }}]</a> {{ end }}
         {{ end }}
       </div>
     </div>

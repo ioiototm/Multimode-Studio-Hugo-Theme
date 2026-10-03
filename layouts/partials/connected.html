@@ -1,0 +1,12 @@
+{{/* Connected pages: list paths in front matter as `related: ["/projects/x", "/posts/y"]`.
+     Pages that don't exist in this build (e.g. drafts) are skipped. */}}
+{{ $pages := slice }}
+{{ range .Params.related }}{{ with site.GetPage . }}{{ $pages = $pages | append . }}{{ end }}{{ end }}
+{{ with $pages }}
+<div class="publication-footer">
+  <h3>Connected</h3>
+  <div class="related-grid">
+    {{ range . }}{{ partial "card.html" . }}{{ end }}
+  </div>
+</div>
+{{ end }}

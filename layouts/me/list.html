@@ -69,7 +69,7 @@
             {{ end }}
             {{ $grad := delimit $stops ", " }}
             <a href="{{ .url }}" target="_blank" rel="noopener" class="multi-tone-pill" style="--btn-gradient: linear-gradient(135deg, {{ $grad | safeCSS }}); --btn-color: var(--tone-{{ index .tones 0 }});">
-              <i class="{{ .icon }}"></i> {{ .name }}
+              {{ partial "social-icon.html" . }} {{ .name }}
             </a>
           {{ end }}
         </div>

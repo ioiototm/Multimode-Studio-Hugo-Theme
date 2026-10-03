@@ -3389,3 +3389,7 @@ body:has(.page-404) .site-footer {
 .skill-readout-prompt{color:var(--tone-code)}
 @media(max-width:600px){.skill-word.lvl-4{font-size:1.7rem}.skill-word.lvl-3{font-size:1.3rem}.skills-cloud{gap:4px 12px}}
 @media(prefers-reduced-motion:reduce){.skill-word{transition:none}}
+
+/* Image icons for social links (used instead of a Font Awesome icon) */
+.social-img{width:1.15em;height:1.15em;border-radius:50%;vertical-align:-0.2em;object-fit:cover;display:inline-block}
+.multi-tone-btn .social-img{width:22px;height:22px;position:relative;z-index:1}

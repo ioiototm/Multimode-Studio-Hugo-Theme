@@ -1,0 +1,2 @@
+{{/* Social link icon: an image if `image` is set, otherwise a Font Awesome class from `icon`. */}}
+{{ if .image }}<img class="social-img" src="{{ .image }}" alt="" aria-hidden="true">{{ else }}<i class="{{ .icon }}"></i>{{ end }}
