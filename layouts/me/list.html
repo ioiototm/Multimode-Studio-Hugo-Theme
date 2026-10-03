@@ -173,7 +173,7 @@
                   <div style="margin-bottom: 12px;">
                     <strong>{{ .title }}</strong>
                     <p style="margin: 4px 0 0;">{{ .description | markdownify }}</p>
-                    {{ with .link }}<a class="text-link" href="{{ . }}" target="_blank" rel="noopener">Open project →</a>{{ end }}
+                    {{ with .link }}<a class="text-link" href="{{ . }}"{{ if hasPrefix . "http" }} target="_blank" rel="noopener"{{ end }}>Open project →</a>{{ end }}
                   </div>
                 {{ end }}
               </article>

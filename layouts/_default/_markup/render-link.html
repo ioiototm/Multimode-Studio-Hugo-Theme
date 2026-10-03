@@ -1,0 +1,3 @@
+{{- /* Markdown links: other websites open in a new tab, links within the site stay in the same tab */ -}}
+<a href="{{ .Destination | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if hasPrefix .Destination "http" }} target="_blank" rel="noopener"{{ end }}>{{ .Text }}</a>
+{{- /* keep this file ending without a newline so links don't gain trailing spaces */ -}}

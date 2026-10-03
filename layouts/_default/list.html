@@ -3,8 +3,17 @@
   <h1>{{ .Title }}</h1>
   {{ with .Params.description }}<p>{{ . }}</p>{{ end }}
 </header>
+{{/* Section pages also show any page tagged with the matching mode (e.g. Art shows every "art" page) */}}
+{{ $sectionToMode := dict "projects" "code" "art" "art" "music" "music" "research" "research" "posts" "writing" "streams" "game" }}
+{{ $pages := .Pages }}
+{{ if .IsSection }}
+  {{ with index $sectionToMode .Section }}
+    {{ $tagged := where site.RegularPages "Params.modes" "intersect" (slice .) }}
+    {{ $pages = ($pages | union $tagged).ByDate.Reverse }}
+  {{ end }}
+{{ end }}
 <section class="grid">
-  {{ range .Paginator.Pages }}
+  {{ range (.Paginate $pages).Pages }}
     {{ partial "card.html" . }}
   {{ end }}
 </section>

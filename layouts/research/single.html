@@ -95,16 +95,15 @@
     {{ .Content }}
   </div>
 
-  {{ if .Params.projects }}
+  {{ $connected := slice }}
+  {{ range (union (.Params.projects | default slice) (.Params.related | default slice)) }}
+    {{ with site.GetPage . }}{{ $connected = $connected | append . }}{{ end }}
+  {{ end }}
+  {{ with $connected }}
   <div class="publication-footer">
-    <h3>Connected Projects</h3>
+    <h3>Connected</h3>
     <div class="related-grid">
-      {{ range .Params.projects }}
-        {{ $projectPage := site.GetPage . }}
-        {{ if $projectPage }}
-          {{ partial "card.html" $projectPage }}
-        {{ end }}
-      {{ end }}
+      {{ range . }}{{ partial "card.html" . }}{{ end }}
     </div>
   </div>
   {{ end }}
